@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Erin & Sina</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F0E8;
+    --card: #FFFDF8;
+    --text: #1C1917;
+    --muted: #78716C;
+    --border: #E5DDD0;
+    --health: #4A7C59;
+    --fun: #C2622D;
+    --home: #5B6FA6;
+    --work: #8B5E3C;
+    --growth: #7C5C8A;
+    --sync-ok: #4A7C59;
+    --sync-err: #C2622D;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* PIN SCREEN */
+  .pin-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+  .pin-screen.hidden { display: none; }
+  .pin-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .pin-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .pin-dots {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .pin-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: transparent;
+    transition: all 0.15s;
+  }
+  .pin-dot.filled {
+    background: var(--text);
+    border-color: var(--text);
+  }
+  .pin-dot.error {
+    background: var(--fun);
+    border-color: var(--fun);
+  }
+  .pin-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 72px);
+    gap: 12px;
+  }
+  .pin-key {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .pin-key:active { background: var(--border); transform: scale(0.95); }
+  .pin-key.empty { border: none; background: none; cursor: default; }
+  .pin-key.delete { font-size: 18px; }
+  .pin-error {
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--fun);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .pin-error.show { opacity: 1; }
+
+  /* SETUP SCREEN */
+  .setup-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 24px;
+    overflow-y: auto;
+  }
+  .setup-screen.hidden { display: none; }
+  .setup-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+  .setup-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+  .setup-step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .step-num {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .step-title {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .step-body {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .step-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--fun);
+    text-decoration: none;
+    border-bottom: 1px solid var(--fun);
+    padding-bottom: 1px;
+  }
+  .step-code {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 11px;
+    font-family: monospace;
+    margin-top: 8px;
+    word-break: break-all;
+    color: var(--text);
+  }
+  .url-input-wrap { margin-top: 24px; }
+  .url-label {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .url-input {
+    width: 100%;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    margin-bottom: 12px;
+  }
+  .url-input:focus { border-color: var(--text); }
+  .url-input::placeholder { color: var(--muted); }
+  .setup-btn {
+    width: 100%;
+    background: var(--text);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    margin-bottom: 10px;
+  }
+  .setup-btn:active { opacity: 0.8; }
+  .setup-btn-secondary {
+    width: 100%;
+    background: none;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .test-result {
+    margin-top: 10px;
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: none;
+  }
+  .test-result.success { background: rgba(74,124,89,0.1); color: var(--health); display: block; }
+  .test-result.error { background: rgba(194,98,45,0.1); color: var(--fun); display: block; }
+
+  /* HEADER */
+  .header {
+    padding: 20px 20px 12px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 400;
+  }
+  .header-right { display: flex; align-items: center; gap: 8px; }
+  .date-str { font-size: 11px; color: var(--muted); font-weight: 300; }
+  .sync-indicator {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.3s;
+  }
+  .sync-indicator.synced { background: rgba(74,124,89,0.12); color: var(--sync-ok); }
+  .sync-indicator.syncing { background: rgba(120,113,108,0.1); color: var(--muted); }
+  .sync-indicator.error { background: rgba(194,98,45,0.1); color: var(--sync-err); }
+  .sync-indicator.offline { background: rgba(120,113,108,0.1); color: var(--muted); }
+  .settings-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--muted);
+    padding: 2px;
+  }
+
+  /* NAV */
+  .nav {
+    display: flex;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0 20px;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    color: var(--muted);
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .nav-btn.active { color: var(--text); border-bottom-color: var(--text); }
+
+  /* SCHEDULE */
+  .schedule-header {
+    padding: 20px 20px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .schedule-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 400;
+  }
+  .day-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .timeline { padding: 0 20px; }
+  .time-block { display: flex; gap: 14px; margin-bottom: 2px; }
+  .time-col { width: 52px; flex-shrink: 0; padding-top: 10px; font-size: 11px; color: var(--muted); font-weight: 300; text-align: right; }
+  .block-line { width: 1px; background: var(--border); flex-shrink: 0; position: relative; }
+  .block-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); position: absolute; left: -3px; top: 13px; }
+  .block-dot.current { background: #C2622D; box-shadow: 0 0 0 3px rgba(194,98,45,0.2); }
+  .block-content { flex: 1; padding: 8px 12px; border-radius: 8px; margin: 4px 0; transition: all 0.15s; }
+  .block-content:active { opacity: 0.8; }
+  .block-content.work { background: rgba(139,94,60,0.1); border-left: 3px solid var(--work); }
+  .block-content.break { background: rgba(120,113,108,0.08); border-left: 3px solid var(--border); }
+  .block-content.personal { background: rgba(124,92,138,0.1); border-left: 3px solid var(--growth); }
+  .block-content.health { background: rgba(74,124,89,0.1); border-left: 3px solid var(--health); }
+  .block-content.social { background: rgba(91,111,166,0.1); border-left: 3px solid var(--home); }
+  .block-content.mini { background: rgba(194,98,45,0.06); border-left: 3px solid rgba(194,98,45,0.3); }
+  .block-label { font-size: 13px; font-weight: 500; color: var(--text); }
+  .block-sublabel { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .section-note { font-size: 11px; color: var(--muted); padding: 12px 20px 0; font-style: italic; }
+
+  /* LISTS */
+  .lists-container { padding: 16px 20px; }
+  .list-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
+  .list-card-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer; }
+  .list-card-title { font-size: 13px; font-weight: 500; }
+  .list-card-meta { display: flex; align-items: center; gap: 8px; }
+  .item-count { font-size: 11px; color: var(--muted); background: var(--bg); padding: 2px 7px; border-radius: 10px; }
+  .expand-btn { font-size: 16px; color: var(--muted); background: none; border: none; cursor: pointer; line-height: 1; padding: 0 0 0 4px; }
+  .list-body { display: none; border-top: 1px solid var(--border); }
+  .list-body.open { display: block; }
+  .list-items { padding: 8px 0; }
+  .list-item { display: flex; align-items: center; padding: 8px 14px; gap: 10px; border-bottom: 1px solid var(--border); }
+  .list-item:last-child { border-bottom: none; }
+  .item-check { width: 18px; height: 18px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .item-check.checked { background: var(--text); border-color: var(--text); color: white; font-size: 10px; }
+  .item-text { flex: 1; font-size: 13px; font-weight: 300; }
+  .item-text.done { text-decoration: line-through; color: var(--muted); }
+  .item-priority { font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 500; }
+  .priority-high { background: rgba(194,98,45,0.12); color: var(--fun); }
+  .priority-med { background: rgba(91,111,166,0.12); color: var(--home); }
+  .priority-low { background: rgba(120,113,108,0.1); color: var(--muted); }
+  .item-delete { font-size: 14px; color: var(--border); background: none; border: none; cursor: pointer; padding: 0; transition: color 0.15s; }
+  .item-delete:active { color: #C2622D; }
+  .add-form { display: flex; gap: 8px; padding: 10px 14px; background: var(--bg); border-top: 1px solid var(--border); }
+  .add-input { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); outline: none; }
+  .add-input:focus { border-color: var(--text); }
+  .priority-select { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--muted); outline: none; cursor: pointer; }
+  .add-btn { background: var(--text); color: white; border: none; border-radius: 8px; padding: 8px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; }
+  .add-btn:active { opacity: 0.8; }
+  .empty-state { padding: 20px 14px; text-align: center; color: var(--muted); font-size: 12px; font-style: italic; }
+
+  /* GROWTH */
+  .growth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px 20px; }
+  .growth-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 14px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .growth-card:active { transform: scale(0.97); }
+  .growth-icon { font-size: 28px; margin-bottom: 8px; }
+  .growth-label { font-size: 13px; font-weight: 500; }
+  .growth-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .growth-selected { border-color: var(--growth); background: rgba(124,92,138,0.06); }
+
+  /* LOADING */
+  .loading-row { padding: 20px; text-align: center; color: var(--muted); font-size: 12px; font-style: italic; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: white; padding: 10px 18px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all 0.3s; z-index: 200; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .content { padding: 0; }
+  .section { display: none; }
+  .section.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- PIN SCREEN -->
+<div class="pin-screen" id="pinScreen">
+  <div class="pin-logo">Erin & Sina</div>
+  <p class="pin-sub">Enter your PIN to continue</p>
+  <div class="pin-dots">
+    <div class="pin-dot" id="dot0"></div>
+    <div class="pin-dot" id="dot1"></div>
+    <div class="pin-dot" id="dot2"></div>
+    <div class="pin-dot" id="dot3"></div>
+  </div>
+  <div class="pin-keypad">
+    <button class="pin-key" onclick="pinPress('1')">1</button>
+    <button class="pin-key" onclick="pinPress('2')">2</button>
+    <button class="pin-key" onclick="pinPress('3')">3</button>
+    <button class="pin-key" onclick="pinPress('4')">4</button>
+    <button class="pin-key" onclick="pinPress('5')">5</button>
+    <button class="pin-key" onclick="pinPress('6')">6</button>
+    <button class="pin-key" onclick="pinPress('7')">7</button>
+    <button class="pin-key" onclick="pinPress('8')">8</button>
+    <button class="pin-key" onclick="pinPress('9')">9</button>
+    <button class="pin-key empty"></button>
+    <button class="pin-key" onclick="pinPress('0')">0</button>
+    <button class="pin-key delete" onclick="pinDelete()">⌫</button>
+  </div>
+  <div class="pin-error" id="pinError">Incorrect PIN — try again</div>
+</div>
+
+<!-- SETUP SCREEN -->
+<div class="setup-screen" id="setupScreen">
+  <div class="setup-logo">Erin & Sina</div>
+  <p class="setup-sub">Connect your Google Sheet to sync lists between both phones. Only needs to be done once.</p>
+
+  <div class="setup-step">
+    <div class="step-num">Step 1</div>
+    <div class="step-title">Create a Google Sheet</div>
+    <div class="step-body">Go to sheets.google.com, create a new blank sheet, and share it with Sina (Editor access).</div>
+    <a class="step-link" href="https://sheets.google.com" target="_blank">Open Google Sheets →</a>
+  </div>
+
+  <div class="setup-step">
+    <div class="step-num">Step 2</div>
+    <div class="step-title">Open Apps Script</div>
+    <div class="step-body">Inside your new sheet, click <strong>Extensions → Apps Script</strong>. A new tab opens with a code editor.</div>
+  </div>
+
+  <div class="setup-step">
+    <div class="step-num">Step 3</div>
+    <div class="step-title">Paste the script</div>
+    <div class="step-body">Delete everything in the editor. Paste the code from the <strong>Code.gs</strong> file you downloaded. Click the 💾 save icon.</div>
+  </div>
+
+  <div class="setup-step">
+    <div class="step-num">Step 4</div>
+    <div class="step-title">Deploy it</div>
+    <div class="step-body">
+      Click <strong>Deploy → New deployment</strong><br>
+      • Type: <strong>Web app</strong><br>
+      • Execute as: <strong>Me</strong><br>
+      • Who has access: <strong>Anyone</strong><br>
+      Click <strong>Deploy</strong>, approve permissions, then copy the URL it gives you.
+    </div>
+  </div>
+
+  <div class="setup-step">
+    <div class="step-num">Step 5</div>
+    <div class="step-title">Paste your URL below</div>
+    <div class="step-body">The URL looks like: <span style="font-family:monospace;font-size:11px;">https://script.google.com/macros/s/ABC.../exec</span></div>
+  </div>
+
+  <div class="url-input-wrap">
+    <label class="url-label">Your Apps Script URL</label>
+    <input class="url-input" id="scriptUrlInput" type="url" placeholder="https://script.google.com/macros/s/..." />
+    <button class="setup-btn" onclick="testAndSaveUrl()">Test & Connect</button>
+    <button class="setup-btn-secondary" onclick="skipSetup()">Use offline (no sync)</button>
+    <div class="test-result" id="testResult"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="header">
+  <div class="header-top">
+    <h1>Erin & Sina</h1>
+    <div class="header-right">
+      <span class="sync-indicator offline" id="syncIndicator">● offline</span>
+      <button class="settings-btn" onclick="openSettings()" title="Settings">⚙</button>
+    </div>
+  </div>
+  <div class="date-str" id="dateStr"></div>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSection('schedule')">Today</button>
+  <button class="nav-btn" onclick="showSection('health')">Health & Food</button>
+  <button class="nav-btn" onclick="showSection('fun')">Fun & Culture</button>
+  <button class="nav-btn" onclick="showSection('home')">Home & Life</button>
+  <button class="nav-btn" onclick="showSection('work')">Work</button>
+  <button class="nav-btn" onclick="showSection('growth')">Growth</button>
+</div>
+
+<div class="content">
+  <div class="section active" id="section-schedule">
+    <div class="schedule-header">
+      <h2>Daily Rhythm</h2>
+      <span class="day-label" id="dayLabel"></span>
+    </div>
+    <p class="section-note">Tap a block to jump to its lists →</p>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <div class="section" id="section-health">
+    <div class="lists-container" id="lists-health"></div>
+  </div>
+  <div class="section" id="section-fun">
+    <div class="lists-container" id="lists-fun"></div>
+  </div>
+  <div class="section" id="section-home">
+    <div class="lists-container" id="lists-home"></div>
+  </div>
+  <div class="section" id="section-work">
+    <div class="lists-container" id="lists-work"></div>
+  </div>
+
+  <div class="section" id="section-growth">
+    <p class="section-note" style="padding-bottom:8px;">Tap what feels right today</p>
+    <div class="growth-grid" id="growth-grid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── PIN ────────────────────────────────────────────────────────────────────
+const CORRECT_PIN = '8890';
+const PIN_KEY = 'erin_sina_unlocked';
+let pinEntry = '';
+
+function checkPinSession() {
+  // Stays unlocked for 24 hours
+  const unlocked = localStorage.getItem(PIN_KEY);
+  if (unlocked && (Date.now() - parseInt(unlocked)) < 86400000) {
+    document.getElementById('pinScreen').classList.add('hidden');
+    return true;
+  }
+  return false;
+}
+
+function pinPress(digit) {
+  if (pinEntry.length >= 4) return;
+  pinEntry += digit;
+  updatePinDots();
+  if (pinEntry.length === 4) {
+    setTimeout(checkPin, 100);
+  }
+}
+
+function pinDelete() {
+  pinEntry = pinEntry.slice(0, -1);
+  updatePinDots();
+}
+
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById(`dot${i}`);
+    dot.classList.toggle('filled', i < pinEntry.length);
+    dot.classList.remove('error');
+  }
+}
+
+function checkPin() {
+  if (pinEntry === CORRECT_PIN) {
+    localStorage.setItem(PIN_KEY, Date.now().toString());
+    document.getElementById('pinScreen').classList.add('hidden');
+  } else {
+    for (let i = 0; i < 4; i++) {
+      document.getElementById(`dot${i}`).classList.add('error');
+    }
+    const err = document.getElementById('pinError');
+    err.classList.add('show');
+    setTimeout(() => {
+      pinEntry = '';
+      updatePinDots();
+      err.classList.remove('show');
+    }, 1000);
+  }
+}
+
+// ─── CONFIG ─────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'erin_sina_v2';
+const URL_KEY = 'erin_sina_script_url';
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let scriptUrl = localStorage.getItem(URL_KEY) || '';
+let appData = loadLocal();
+let syncQueue = []; // pending operations when offline
+let isSyncing = false;
+
+// ─── LOCAL STORAGE ──────────────────────────────────────────────────────────
+function makeItem(text, priority) {
+  return { id: Date.now() + Math.floor(Math.random()*100000), text, priority: priority||'', done: false, created: new Date().toISOString() };
+}
+
+const defaultLists = {
+  groceries:   { name: 'Groceries / Stuff to Buy',   section: 'health', items: [] },
+  recipes:     { name: 'Recipes & Food Ideas',        section: 'health', items: [
+    makeItem('Add your favourite recipes here'),
+  ]},
+  restaurants: { name: 'Restaurants to Try',          section: 'health', items: [
+    makeItem('Add restaurants you want to visit'),
+  ]},
+  mentalHealth:{ name: 'Mental Health',               section: 'health', items: [
+    makeItem('Add resources, notes, or things that help'),
+  ]},
+  movies:      { name: 'Movies',                      section: 'fun',    items: [
+    makeItem('Add movies you want to watch'),
+  ]},
+  shows:       { name: 'Shows',                       section: 'fun',    items: [
+    makeItem('Add shows you want to watch'),
+  ]},
+  books:       { name: 'Books',                       section: 'fun',    items: [
+    makeItem('Add books you want to read'),
+  ]},
+  hobbies:     { name: 'Hobbies',                     section: 'fun',    items: [
+    makeItem('Add hobbies you want to explore or do more of'),
+  ]},
+  activities:  { name: 'Activities & Experiences',    section: 'fun',    items: [
+    makeItem('Add things you want to do together — local or travel'),
+  ]},
+  tasksErin:   { name: 'Tasks — Erin',                section: 'home',   items: [] },
+  tasksSina:   { name: 'Tasks — Sina',                section: 'home',   items: [] },
+  tasksShared: { name: 'Tasks — Shared',              section: 'home',   items: [] },
+  discuss:     { name: 'Things to Discuss',           section: 'home',   items: [
+    makeItem('Add topics you want to talk about when you have time'),
+  ]},
+  workErin:    { name: 'Work — Erin',                 section: 'work',   items: [] },
+  workSina:    { name: 'Work — Sina',                 section: 'work',   items: [] },
+  workShared:  { name: 'Work — Shared',               section: 'work',   items: [] },
+};
+
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Merge in any new lists added in updates
+      Object.keys(defaultLists).forEach(k => {
+        if (!parsed.lists[k]) parsed.lists[k] = defaultLists[k];
+      });
+      return parsed;
+    }
+  } catch(e) {}
+  return { lists: JSON.parse(JSON.stringify(defaultLists)) };
+}
+
+function saveLocal() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); } catch(e) {}
+}
+
+// ─── SYNC ───────────────────────────────────────────────────────────────────
+function setSyncStatus(status, msg) {
+  const el = document.getElementById('syncIndicator');
+  el.className = `sync-indicator ${status}`;
+  const labels = { synced: '● synced', syncing: '◌ syncing…', error: '● error', offline: '● offline' };
+  el.textContent = labels[status] || msg || status;
+}
+
+async function syncFromSheet() {
+  if (!scriptUrl) return;
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(`${scriptUrl}?action=getAll`, { mode: 'cors' });
+    const remote = await res.json();
+    if (remote.error) throw new Error(remote.error);
+
+    // Merge remote into local — remote wins for existing items, local keeps new unsent items
+    Object.keys(remote).forEach(listKey => {
+      if (!appData.lists[listKey]) return;
+      const remoteItems = remote[listKey];
+      const localItems = appData.lists[listKey].items;
+
+      // Build map of remote items by id
+      const remoteMap = {};
+      remoteItems.forEach(item => { remoteMap[item.id] = item; });
+
+      // Update or add remote items
+      const merged = [];
+      localItems.forEach(localItem => {
+        if (remoteMap[localItem.id]) {
+          merged.push(remoteMap[localItem.id]); // remote wins
+          delete remoteMap[localItem.id];
+        } else {
+          merged.push(localItem); // local-only item
+        }
+      });
+      // Add any remote items not in local
+      Object.values(remoteMap).forEach(item => merged.push(item));
+      appData.lists[listKey].items = merged;
+    });
+
+    saveLocal();
+    setSyncStatus('synced');
+
+    // Re-render current section
+    const active = document.querySelector('.section.active');
+    if (active) {
+      const id = active.id.replace('section-', '');
+      if (['health','fun','home','work'].includes(id)) renderLists(id);
+    }
+  } catch(e) {
+    setSyncStatus('error');
+    console.warn('Sync error:', e);
+  }
+}
+
+async function pushItem(listKey, item) {
+  if (!scriptUrl) return;
+  try {
+    const url = `${scriptUrl}?action=upsert&listKey=${encodeURIComponent(listKey)}&itemId=${encodeURIComponent(item.id)}&itemData=${encodeURIComponent(JSON.stringify(item))}`;
+    await fetch(url, { mode: 'cors' });
+  } catch(e) {
+    console.warn('Push error:', e);
+  }
+}
+
+async function removeItem(listKey, itemId) {
+  if (!scriptUrl) return;
+  try {
+    const url = `${scriptUrl}?action=delete&listKey=${encodeURIComponent(listKey)}&itemId=${encodeURIComponent(itemId)}`;
+    await fetch(url, { mode: 'cors' });
+  } catch(e) {
+    console.warn('Remove error:', e);
+  }
+}
+
+// ─── SETUP ──────────────────────────────────────────────────────────────────
+async function testAndSaveUrl() {
+  const input = document.getElementById('scriptUrlInput');
+  const result = document.getElementById('testResult');
+  const url = input.value.trim();
+
+  if (!url || !url.includes('script.google.com')) {
+    result.className = 'test-result error';
+    result.textContent = 'That doesn\'t look like a valid Apps Script URL. Check you copied the full link.';
+    return;
+  }
+
+  result.className = 'test-result';
+  result.style.display = 'block';
+  result.textContent = 'Testing connection…';
+
+  try {
+    const res = await fetch(`${url}?action=getAll`, { mode: 'cors' });
+    const data = await res.json();
+    if (data.error && data.error !== 'Unknown action') throw new Error(data.error);
+
+    localStorage.setItem(URL_KEY, url);
+    scriptUrl = url;
+    result.className = 'test-result success';
+    result.textContent = '✓ Connected! Loading your app…';
+    setTimeout(() => {
+      document.getElementById('setupScreen').classList.add('hidden');
+      syncFromSheet();
+      setInterval(syncFromSheet, 30000);
+    }, 1000);
+  } catch(e) {
+    result.className = 'test-result error';
+    result.textContent = 'Couldn\'t connect. Make sure you set "Who has access" to Anyone when deploying.';
+  }
+}
+
+function skipSetup() {
+  document.getElementById('setupScreen').classList.add('hidden');
+  setSyncStatus('offline');
+}
+
+function openSettings() {
+  document.getElementById('setupScreen').classList.remove('hidden');
+  document.getElementById('scriptUrlInput').value = scriptUrl;
+}
+
+// ─── SCHEDULE DATA ──────────────────────────────────────────────────────────
+const schedule = [
+  { time: '5:45',  label: 'Wake up',                        type: 'personal' },
+  { time: '6:00',  label: 'Gym',                            type: 'health',   sub: '2 hours' },
+  { time: '8:00',  label: 'Breakfast + Shower + Food tracking', type: 'health' },
+  { time: '9:00',  label: 'Work Block 1',                   type: 'work',     link: 'work' },
+  { time: '9:50',  label: 'Break',                          type: 'break' },
+  { time: '10:00', label: 'Work Block 2',                   type: 'work',     link: 'work' },
+  { time: '10:50', label: 'Break 2',                        type: 'break' },
+  { time: '11:00', label: 'Work Block 3',                   type: 'work',     link: 'work' },
+  { time: '12:00', label: 'Mini Work Block',                type: 'mini',     link: 'work' },
+  { time: '12:30', label: 'Walk + Strength Training + Lunch', type: 'health' },
+  { time: '1:30',  label: 'Mini Block 2',                   type: 'mini',     sub: 'PG calls etc', link: 'work' },
+  { time: '2:00',  label: 'Work Block 4',                   type: 'work',     link: 'work' },
+  { time: '2:50',  label: 'Mini Break',                     type: 'break' },
+  { time: '3:00',  label: 'Work Block 5',                   type: 'work',     link: 'work' },
+  { time: '3:50',  label: 'Break',                          type: 'break' },
+  { time: '4:00',  label: 'Work Block 6',                   type: 'work',     link: 'work' },
+  { time: '4:50',  label: 'Mini Block',                     type: 'mini',     link: 'work' },
+  { time: '5:30',  label: 'Personal Time',                  type: 'personal', sub: 'Meditation, stretching', link: 'growth' },
+  { time: '6:00',  label: 'Dinner + Relationship Time',     type: 'social' },
+  { time: '7:00',  label: 'Work Block 7',                   type: 'work',     sub: 'Growth / personal', link: 'work' },
+  { time: '8:30',  label: 'Bed Time Routine',               type: 'personal' },
+  { time: '9:00',  label: 'TV',                             type: 'personal', sub: 'Wind down', link: 'fun' },
+  { time: '10:00', label: 'Sleep',                          type: 'break' },
+];
+
+const eveningThemes = { 0:'Work/Relationship', 1:'Work', 2:'Personal', 3:'Work', 4:'Personal', 5:'Relationship', 6:'Family/Adventure' };
+
+function parseTime(str) { const [h,m] = str.split(':').map(Number); return h*60+(m||0); }
+
+function renderSchedule() {
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('dayLabel').textContent = days[now.getDay()];
+  document.getElementById('dateStr').textContent = now.toLocaleDateString('en-CA', { month:'short', day:'numeric' });
+
+  const currentMins = now.getHours()*60 + now.getMinutes();
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = '';
+
+  schedule.forEach((block, i) => {
+    const bMins = parseTime(block.time);
+    const nMins = i < schedule.length-1 ? parseTime(schedule[i+1].time) : bMins+60;
+    const isCurrent = currentMins >= bMins && currentMins < nMins;
+
+    const row = document.createElement('div');
+    row.className = 'time-block';
+
+    const tc = document.createElement('div');
+    tc.className = 'time-col';
+    tc.textContent = block.time;
+
+    const line = document.createElement('div');
+    line.className = 'block-line';
+    const dot = document.createElement('div');
+    dot.className = 'block-dot' + (isCurrent ? ' current' : '');
+    line.appendChild(dot);
+
+    const content = document.createElement('div');
+    content.className = `block-content ${block.type}`;
+    if (isCurrent) content.style.outline = '2px solid rgba(194,98,45,0.4)';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'block-label';
+    lbl.textContent = block.label + (block.link ? ' →' : '');
+    content.appendChild(lbl);
+
+    if (block.sub) {
+      const sub = document.createElement('div');
+      sub.className = 'block-sublabel';
+      sub.textContent = block.sub;
+      content.appendChild(sub);
+    }
+
+    if (block.link) {
+      content.style.cursor = 'pointer';
+      content.onclick = () => showSection(block.link);
+    }
+
+    row.appendChild(tc); row.appendChild(line); row.appendChild(content);
+    tl.appendChild(row);
+  });
+
+  const note = document.createElement('div');
+  note.style.cssText = 'padding:12px 20px 20px;font-size:12px;color:var(--muted);font-style:italic;';
+  note.textContent = `Tonight: ${eveningThemes[now.getDay()]}`;
+  tl.appendChild(note);
+}
+
+// ─── LISTS ──────────────────────────────────────────────────────────────────
+const sectionOrder = {
+  health: ['groceries','recipes','restaurants','mentalHealth'],
+  fun:    ['movies','shows','books','hobbies','activities'],
+  home:   ['tasksErin','tasksSina','tasksShared','discuss'],
+  work:   ['workErin','workSina','workShared'],
+};
+
+function renderLists(sectionId) {
+  const container = document.getElementById(`lists-${sectionId}`);
+  container.innerHTML = '';
+  sectionOrder[sectionId].forEach(key => {
+    const list = appData.lists[key];
+    const activeCount = list.items.filter(i => !i.done).length;
+
+    const card = document.createElement('div');
+    card.className = 'list-card';
+
+    const header = document.createElement('div');
+    header.className = 'list-card-header';
+    header.innerHTML = `
+      <span class="list-card-title">${list.name}</span>
+      <div class="list-card-meta">
+        <span class="item-count" id="count-${key}">${activeCount}</span>
+        <button class="expand-btn" id="chevron-${key}">+</button>
+      </div>`;
+    header.onclick = () => toggleList(key);
+
+    const body = document.createElement('div');
+    body.className = 'list-body';
+    body.id = `body-${key}`;
+
+    const itemsDiv = document.createElement('div');
+    itemsDiv.className = 'list-items';
+    itemsDiv.id = `items-${key}`;
+    renderItems(key, itemsDiv);
+
+    const addForm = document.createElement('div');
+    addForm.className = 'add-form';
+    addForm.innerHTML = `
+      <input class="add-input" id="input-${key}" placeholder="Add item…" onkeydown="handleEnter(event,'${key}')">
+      <select class="priority-select" id="pri-${key}">
+        <option value="">—</option>
+        <option value="high">High</option>
+        <option value="med">Med</option>
+        <option value="low">Low</option>
+      </select>
+      <button class="add-btn" onclick="addItem('${key}')">Add</button>`;
+
+    body.appendChild(itemsDiv);
+    body.appendChild(addForm);
+    card.appendChild(header);
+    card.appendChild(body);
+    container.appendChild(card);
+  });
+}
+
+function renderItems(key, container) {
+  const items = appData.lists[key].items;
+  container.innerHTML = '';
+
+  const active = items.filter(i => !i.done).sort((a,b) => {
+    const o = {high:0,med:1,low:2,'':3};
+    return (o[a.priority]||3)-(o[b.priority]||3);
+  });
+  const done = items.filter(i => i.done);
+  const sorted = [...active, ...done];
+
+  if (sorted.length === 0) {
+    container.innerHTML = '<div class="empty-state">Nothing here yet</div>';
+    return;
+  }
+
+  sorted.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'list-item';
+
+    const check = document.createElement('div');
+    check.className = 'item-check' + (item.done ? ' checked' : '');
+    check.innerHTML = item.done ? '✓' : '';
+    check.onclick = () => toggleDone(key, item.id);
+
+    const text = document.createElement('span');
+    text.className = 'item-text' + (item.done ? ' done' : '');
+    text.textContent = item.text;
+
+    const del = document.createElement('button');
+    del.className = 'item-delete';
+    del.textContent = '×';
+    del.onclick = () => deleteItem(key, item.id);
+
+    row.appendChild(check);
+    row.appendChild(text);
+
+    if (item.priority) {
+      const pri = document.createElement('span');
+      pri.className = `item-priority priority-${item.priority}`;
+      pri.textContent = item.priority;
+      row.appendChild(pri);
+    }
+
+    row.appendChild(del);
+    container.appendChild(row);
+  });
+}
+
+function toggleList(key) {
+  const body = document.getElementById(`body-${key}`);
+  const chevron = document.getElementById(`chevron-${key}`);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chevron.textContent = isOpen ? '+' : '−';
+  if (!isOpen) setTimeout(() => document.getElementById(`input-${key}`)?.focus(), 100);
+}
+
+function updateCount(key) {
+  const c = document.getElementById(`count-${key}`);
+  if (c) c.textContent = appData.lists[key].items.filter(i => !i.done).length;
+}
+
+function addItem(key) {
+  const input = document.getElementById(`input-${key}`);
+  const priSel = document.getElementById(`pri-${key}`);
+  const text = input.value.trim();
+  if (!text) return;
+
+  const item = { id: Date.now(), text, priority: priSel.value, done: false, created: new Date().toISOString() };
+  appData.lists[key].items.push(item);
+  saveLocal();
+  pushItem(key, item);
+
+  input.value = ''; priSel.value = '';
+  renderItems(key, document.getElementById(`items-${key}`));
+  updateCount(key);
+  showToast('Added ✓');
+}
+
+function handleEnter(e, key) { if (e.key === 'Enter') addItem(key); }
+
+function toggleDone(key, id) {
+  const item = appData.lists[key].items.find(i => i.id === id);
+  if (!item) return;
+  item.done = !item.done;
+  saveLocal();
+  pushItem(key, item);
+  renderItems(key, document.getElementById(`items-${key}`));
+  updateCount(key);
+}
+
+function deleteItem(key, id) {
+  appData.lists[key].items = appData.lists[key].items.filter(i => i.id !== id);
+  saveLocal();
+  removeItem(key, id);
+  renderItems(key, document.getElementById(`items-${key}`));
+  updateCount(key);
+}
+
+// ─── GROWTH ─────────────────────────────────────────────────────────────────
+const growthOptions = [
+  { icon:'🧘', label:'Meditation',  sub:'10–20 min' },
+  { icon:'🤸', label:'Stretching',  sub:'15 min' },
+  { icon:'🚶', label:'Walk',        sub:'Fresh air' },
+  { icon:'🧘‍♀️', label:'Yoga',       sub:'20–30 min' },
+  { icon:'📓', label:'Journaling',  sub:'Write it out' },
+  { icon:'📖', label:'Read',        sub:'From your list', link:'fun' },
+];
+
+function renderGrowth() {
+  const grid = document.getElementById('growth-grid');
+  grid.innerHTML = '';
+  growthOptions.forEach(opt => {
+    const card = document.createElement('div');
+    card.className = 'growth-card';
+    card.innerHTML = `<div class="growth-icon">${opt.icon}</div><div class="growth-label">${opt.label}</div><div class="growth-sub">${opt.sub}</div>`;
+    card.onclick = () => {
+      document.querySelectorAll('.growth-card').forEach(c => c.classList.remove('growth-selected'));
+      card.classList.add('growth-selected');
+      if (opt.link) setTimeout(() => showSection(opt.link), 300);
+      else showToast(`${opt.label} — enjoy 🌿`);
+    };
+    grid.appendChild(card);
+  });
+}
+
+// ─── NAV ────────────────────────────────────────────────────────────────────
+const navMap = { schedule:0, health:1, fun:2, home:3, work:4, growth:5 };
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`section-${id}`)?.classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  if (navMap[id] !== undefined) btns[navMap[id]]?.classList.add('active');
+  if (['health','fun','home','work'].includes(id)) renderLists(id);
+}
+
+// ─── TOAST ──────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ─── INIT ───────────────────────────────────────────────────────────────────
+checkPinSession();
+
+if (scriptUrl) {
+  document.getElementById('setupScreen').classList.add('hidden');
+  document.getElementById('scriptUrlInput').value = scriptUrl;
+  syncFromSheet();
+  setInterval(syncFromSheet, 30000); // auto-refresh every 30s
+} else {
+  // Show setup
+}
+
+renderSchedule();
+renderGrowth();
+</script>
+</body>
+</html>
