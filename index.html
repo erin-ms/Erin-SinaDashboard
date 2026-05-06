@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Erin & Sina</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root{--bg:#F5F0E8;--card:#FFFDF8;--text:#1C1917;--muted:#78716C;--border:#E5DDD0;--health:#4A7C59;--fun:#C2622D;--home:#5B6FA6;--work:#8B5E3C;--growth:#7C5C8A;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -32,6 +33,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}
 .header h1{font-family:'Playfair Display',serif;font-size:20px;font-weight:400;}
 .date-str{font-size:11px;color:var(--muted);font-weight:300;}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--border);display:inline-block;margin-left:6px;transition:background 0.3s;}
+.sync-dot.live{background:#4A7C59;}
+.sync-dot.syncing{background:#C2622D;}
 
 /* NAV */
 .nav{display:flex;background:var(--card);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;padding:0 20px;}
@@ -55,7 +59,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .block-content.break{background:rgba(120,113,108,0.08);border-left:3px solid var(--border);}
 .block-content.personal{background:rgba(124,92,138,0.1);border-left:3px solid var(--growth);}
 .block-content.health{background:rgba(74,124,89,0.1);border-left:3px solid var(--health);}
-.block-content.social{background:rgba(91,111,166,0.1);border-left:3px solid var(--home);}
+.block-content.social{background:rgba(91,111,166,0.1);border-left:3px solid var(--border);}
 .block-content.mini{background:rgba(194,98,45,0.06);border-left:3px solid rgba(194,98,45,0.3);}
 .block-label{font-size:13px;font-weight:500;color:var(--text);}
 .block-sublabel{font-size:11px;color:var(--muted);margin-top:1px;}
@@ -142,6 +146,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="header-top">
     <h1>Erin & Sina</h1>
     <span class="date-str" id="dateStr"></span>
+    <span class="sync-dot" id="syncDot" title="Sync status"></span>
   </div>
 </div>
 
@@ -176,7 +181,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <div class="toast" id="toast"></div>
 
 <script>
-// PIN
+// ─── PIN ───────────────────────────────────────────────────────────────────
 const CORRECT_PIN = '8890';
 const PIN_KEY = 'es_pin_v1';
 let pinEntry = '';
@@ -198,13 +203,13 @@ function pinPress(d) {
 }
 
 function pinDelete() {
-  pinEntry = pinEntry.slice(0,-1);
+  pinEntry = pinEntry.slice(0, -1);
   updateDots();
 }
 
 function updateDots() {
-  for (let i=0;i<4;i++) {
-    const dot = document.getElementById('dot'+i);
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('dot' + i);
     dot.classList.toggle('filled', i < pinEntry.length);
     dot.classList.remove('error');
   }
@@ -216,7 +221,7 @@ function checkPin() {
     document.getElementById('pinScreen').classList.add('hidden');
     initApp();
   } else {
-    for (let i=0;i<4;i++) document.getElementById('dot'+i).classList.add('error');
+    for (let i = 0; i < 4; i++) document.getElementById('dot' + i).classList.add('error');
     document.getElementById('pinError').classList.add('show');
     setTimeout(() => {
       pinEntry = '';
@@ -226,96 +231,105 @@ function checkPin() {
   }
 }
 
-// DATA
-const STORE = 'es_data_v1';
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const STORE = 'es_data_v2'; // v2 to avoid conflict with old format
 
 function makeItem(text) {
-  return {id: Date.now()+Math.floor(Math.random()*99999), text, priority:'', done:false};
+  return { id: Date.now() + Math.floor(Math.random() * 99999), text, priority: '', done: false };
 }
 
 const DEFAULTS = {
-  groceries:    {name:'Groceries / Stuff to Buy',   section:'health', items:[]},
-  recipes:      {name:'Recipes & Food Ideas',        section:'health', items:[makeItem('Add your favourite recipes here')]},
-  restaurants:  {name:'Restaurants to Try',          section:'health', items:[makeItem('Add restaurants you want to visit')]},
-  mentalHealth: {name:'Mental Health',               section:'health', items:[makeItem('Add resources or things that help')]},
-  movies:       {name:'Movies',                      section:'fun',    items:[makeItem('Add movies you want to watch')]},
-  shows:        {name:'Shows',                       section:'fun',    items:[makeItem('Add shows you want to watch')]},
-  books:        {name:'Books',                       section:'fun',    items:[makeItem('Add books you want to read')]},
-  hobbies:      {name:'Hobbies',                     section:'fun',    items:[makeItem('Add hobbies you want to explore')]},
-  activities:   {name:'Activities & Experiences',    section:'fun',    items:[makeItem('Add things you want to do together')]},
-  tasksErin:    {name:'Tasks — Erin',                section:'home',   items:[]},
-  tasksSina:    {name:'Tasks — Sina',                section:'home',   items:[]},
-  tasksShared:  {name:'Tasks — Shared',              section:'home',   items:[]},
-  discuss:      {name:'Things to Discuss',           section:'home',   items:[makeItem('Add topics to talk about')]},
-  workErin:     {name:'Work — Erin',                 section:'work',   items:[]},
-  workSina:     {name:'Work — Sina',                 section:'work',   items:[]},
-  workShared:   {name:'Work — Shared',               section:'work',   items:[]},
+  groceries:    { name: 'Groceries / Stuff to Buy',   section: 'health', items: [] },
+  recipes:      { name: 'Recipes & Food Ideas',        section: 'health', items: [makeItem('Add your favourite recipes here')] },
+  restaurants:  { name: 'Restaurants to Try',          section: 'health', items: [makeItem('Add restaurants you want to visit')] },
+  mentalHealth: { name: 'Mental Health',               section: 'health', items: [makeItem('Add resources or things that help')] },
+  movies:       { name: 'Movies',                      section: 'fun',    items: [makeItem('Add movies you want to watch')] },
+  shows:        { name: 'Shows',                       section: 'fun',    items: [makeItem('Add shows you want to watch')] },
+  books:        { name: 'Books',                       section: 'fun',    items: [makeItem('Add books you want to read')] },
+  hobbies:      { name: 'Hobbies',                     section: 'fun',    items: [makeItem('Add hobbies you want to explore')] },
+  activities:   { name: 'Activities & Experiences',    section: 'fun',    items: [makeItem('Add things you want to do together')] },
+  tasksErin:    { name: 'Tasks — Erin',                section: 'home',   items: [] },
+  tasksSina:    { name: 'Tasks — Sina',                section: 'home',   items: [] },
+  tasksShared:  { name: 'Tasks — Shared',              section: 'home',   items: [] },
+  discuss:      { name: 'Things to Discuss',           section: 'home',   items: [makeItem('Add topics to talk about')] },
+  workErin:     { name: 'Work — Erin',                 section: 'work',   items: [] },
+  workSina:     { name: 'Work — Sina',                 section: 'work',   items: [] },
+  workShared:   { name: 'Work — Shared',               section: 'work',   items: [] },
 };
 
 let appData;
 
 function loadData() {
   try {
+    // Try new format first
     const raw = localStorage.getItem(STORE);
     if (raw) {
       const d = JSON.parse(raw);
-      // Add any missing lists
       Object.keys(DEFAULTS).forEach(k => {
         if (!d.lists[k]) d.lists[k] = JSON.parse(JSON.stringify(DEFAULTS[k]));
       });
       return d;
     }
-  } catch(e){}
-  return {lists: JSON.parse(JSON.stringify(DEFAULTS))};
+    // Migrate from old format (es_data_v1) if it exists
+    const old = localStorage.getItem('es_data_v1');
+    if (old) {
+      const d = JSON.parse(old);
+      Object.keys(DEFAULTS).forEach(k => {
+        if (!d.lists[k]) d.lists[k] = JSON.parse(JSON.stringify(DEFAULTS[k]));
+      });
+      return d;
+    }
+  } catch(e) {}
+  return { lists: JSON.parse(JSON.stringify(DEFAULTS)) };
 }
 
 function save() {
   localStorage.setItem(STORE, JSON.stringify(appData));
 }
 
-// SCHEDULE
+// ─── SCHEDULE ──────────────────────────────────────────────────────────────
 const schedule = [
-  {time:'5:45', label:'Wake up', type:'personal'},
-  {time:'6:00', label:'Gym', type:'health', sub:'2 hours'},
-  {time:'8:00', label:'Breakfast + Shower + Food tracking', type:'health'},
-  {time:'9:00', label:'Work Block 1', type:'work', link:'work'},
-  {time:'9:50', label:'Break', type:'break'},
-  {time:'10:00', label:'Work Block 2', type:'work', link:'work'},
-  {time:'10:50', label:'Break 2', type:'break'},
-  {time:'11:00', label:'Work Block 3', type:'work', link:'work'},
-  {time:'12:00', label:'Mini Work Block', type:'mini', link:'work'},
-  {time:'12:30', label:'Walk + Strength Training + Lunch', type:'health'},
-  {time:'1:30', label:'Mini Block 2', type:'mini', sub:'PG calls etc', link:'work'},
-  {time:'2:00', label:'Work Block 4', type:'work', link:'work'},
-  {time:'2:50', label:'Mini Break', type:'break'},
-  {time:'3:00', label:'Work Block 5', type:'work', link:'work'},
-  {time:'3:50', label:'Break', type:'break'},
-  {time:'4:00', label:'Work Block 6', type:'work', link:'work'},
-  {time:'4:50', label:'Mini Block', type:'mini', link:'work'},
-  {time:'5:30', label:'Personal Time', type:'personal', sub:'Meditation, stretching', link:'growth'},
-  {time:'6:00', label:'Dinner + Relationship Time', type:'social'},
-  {time:'7:00', label:'Work Block 7', type:'work', sub:'Growth / personal', link:'work'},
-  {time:'8:30', label:'Bed Time Routine', type:'personal'},
-  {time:'9:00', label:'TV', type:'personal', sub:'Wind down', link:'fun'},
-  {time:'10:00', label:'Sleep', type:'break'},
+  { time: '5:45',  label: 'Wake up',                           type: 'personal' },
+  { time: '6:00',  label: 'Gym',                               type: 'health',   sub: '2 hours' },
+  { time: '8:00',  label: 'Breakfast + Shower + Food tracking', type: 'health' },
+  { time: '9:00',  label: 'Work Block 1',                      type: 'work',     link: 'work' },
+  { time: '9:50',  label: 'Break',                             type: 'break' },
+  { time: '10:00', label: 'Work Block 2',                      type: 'work',     link: 'work' },
+  { time: '10:50', label: 'Break 2',                           type: 'break' },
+  { time: '11:00', label: 'Work Block 3',                      type: 'work',     link: 'work' },
+  { time: '12:00', label: 'Mini Work Block',                   type: 'mini',     link: 'work' },
+  { time: '12:30', label: 'Walk + Strength Training + Lunch',  type: 'health' },
+  { time: '1:30',  label: 'Mini Block 2',                      type: 'mini',     sub: 'PG calls etc', link: 'work' },
+  { time: '2:00',  label: 'Work Block 4',                      type: 'work',     link: 'work' },
+  { time: '2:50',  label: 'Mini Break',                        type: 'break' },
+  { time: '3:00',  label: 'Work Block 5',                      type: 'work',     link: 'work' },
+  { time: '3:50',  label: 'Break',                             type: 'break' },
+  { time: '4:00',  label: 'Work Block 6',                      type: 'work',     link: 'work' },
+  { time: '4:50',  label: 'Mini Block',                        type: 'mini',     link: 'work' },
+  { time: '5:30',  label: 'Personal Time',                     type: 'personal', sub: 'Meditation, stretching', link: 'growth' },
+  { time: '6:00',  label: 'Dinner + Relationship Time',        type: 'social' },
+  { time: '7:00',  label: 'Work Block 7',                      type: 'work',     sub: 'Growth / personal', link: 'work' },
+  { time: '8:30',  label: 'Bed Time Routine',                  type: 'personal' },
+  { time: '9:00',  label: 'TV',                                type: 'personal', sub: 'Wind down', link: 'fun' },
+  { time: '10:00', label: 'Sleep',                             type: 'break' },
 ];
 
-const eveningThemes = {0:'Work/Relationship',1:'Work',2:'Personal',3:'Work',4:'Personal',5:'Relationship',6:'Family/Adventure'};
+const eveningThemes = { 0: 'Work/Relationship', 1: 'Work', 2: 'Personal', 3: 'Work', 4: 'Personal', 5: 'Relationship', 6: 'Family/Adventure' };
 
-function parseTime(s) {const [h,m]=s.split(':').map(Number);return h*60+(m||0);}
+function parseTime(s) { const [h, m] = s.split(':').map(Number); return h * 60 + (m || 0); }
 
 function renderSchedule() {
   const now = new Date();
-  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   document.getElementById('dayLabel').textContent = days[now.getDay()];
-  document.getElementById('dateStr').textContent = now.toLocaleDateString('en-CA',{month:'short',day:'numeric'});
-  const cur = now.getHours()*60+now.getMinutes();
+  document.getElementById('dateStr').textContent = now.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' });
+  const cur = now.getHours() * 60 + now.getMinutes();
   const tl = document.getElementById('timeline');
   tl.innerHTML = '';
-  schedule.forEach((b,i) => {
+  schedule.forEach((b, i) => {
     const bm = parseTime(b.time);
-    const nm = i<schedule.length-1?parseTime(schedule[i+1].time):bm+60;
-    const isCur = cur>=bm&&cur<nm;
+    const nm = i < schedule.length - 1 ? parseTime(schedule[i + 1].time) : bm + 60;
+    const isCur = cur >= bm && cur < nm;
     const row = document.createElement('div');
     row.className = 'time-block';
     const tc = document.createElement('div');
@@ -324,257 +338,305 @@ function renderSchedule() {
     const line = document.createElement('div');
     line.className = 'block-line';
     const dot = document.createElement('div');
-    dot.className = 'block-dot'+(isCur?' current':'');
+    dot.className = 'block-dot' + (isCur ? ' current' : '');
     line.appendChild(dot);
     const c = document.createElement('div');
-    c.className = 'block-content '+b.type;
-    if(isCur) c.style.outline='2px solid rgba(194,98,45,0.4)';
+    c.className = 'block-content ' + b.type;
+    if (isCur) c.style.outline = '2px solid rgba(194,98,45,0.4)';
     const lbl = document.createElement('div');
     lbl.className = 'block-label';
-    lbl.textContent = b.label+(b.link?' →':'');
+    lbl.textContent = b.label + (b.link ? ' →' : '');
     c.appendChild(lbl);
-    if(b.sub){const s=document.createElement('div');s.className='block-sublabel';s.textContent=b.sub;c.appendChild(s);}
-    if(b.link){c.style.cursor='pointer';c.onclick=()=>showSection(b.link);}
-    row.appendChild(tc);row.appendChild(line);row.appendChild(c);
+    if (b.sub) { const s = document.createElement('div'); s.className = 'block-sublabel'; s.textContent = b.sub; c.appendChild(s); }
+    if (b.link) { c.style.cursor = 'pointer'; c.onclick = () => showSection(b.link); }
+    row.appendChild(tc); row.appendChild(line); row.appendChild(c);
     tl.appendChild(row);
   });
   const note = document.createElement('div');
-  note.style.cssText='padding:12px 20px 20px;font-size:12px;color:var(--muted);font-style:italic;';
-  note.textContent='Tonight: '+eveningThemes[now.getDay()];
+  note.style.cssText = 'padding:12px 20px 20px;font-size:12px;color:var(--muted);font-style:italic;';
+  note.textContent = 'Tonight: ' + eveningThemes[now.getDay()];
   tl.appendChild(note);
 }
 
-// LISTS
+// ─── LISTS ─────────────────────────────────────────────────────────────────
 const sectionOrder = {
-  health:['groceries','recipes','restaurants','mentalHealth'],
-  fun:['movies','shows','books','hobbies','activities'],
-  home:['tasksErin','tasksSina','tasksShared','discuss'],
-  work:['workErin','workSina','workShared'],
+  health: ['groceries', 'recipes', 'restaurants', 'mentalHealth'],
+  fun:    ['movies', 'shows', 'books', 'hobbies', 'activities'],
+  home:   ['tasksErin', 'tasksSina', 'tasksShared', 'discuss'],
+  work:   ['workErin', 'workSina', 'workShared'],
 };
 
 function renderLists(sid) {
-  const container = document.getElementById('lists-'+sid);
-  container.innerHTML='';
+  const container = document.getElementById('lists-' + sid);
+  container.innerHTML = '';
   sectionOrder[sid].forEach(key => {
     const list = appData.lists[key];
-    const activeCount = list.items.filter(i=>!i.done).length;
+    const activeCount = list.items.filter(i => !i.done).length;
     const card = document.createElement('div');
-    card.className='list-card';
+    card.className = 'list-card';
     const hdr = document.createElement('div');
-    hdr.className='list-card-header';
-    hdr.innerHTML=`<span class="list-card-title">${list.name}</span><div class="list-card-meta"><span class="item-count" id="count-${key}">${activeCount}</span><button class="expand-btn" id="chev-${key}">+</button></div>`;
-    hdr.onclick=()=>toggleList(key);
+    hdr.className = 'list-card-header';
+    hdr.innerHTML = `<span class="list-card-title">${list.name}</span><div class="list-card-meta"><span class="item-count" id="count-${key}">${activeCount}</span><button class="expand-btn" id="chev-${key}">+</button></div>`;
+    hdr.onclick = () => toggleList(key);
     const body = document.createElement('div');
-    body.className='list-body';
-    body.id='body-'+key;
+    body.className = 'list-body';
+    body.id = 'body-' + key;
     const itemsDiv = document.createElement('div');
-    itemsDiv.className='list-items';
-    itemsDiv.id='items-'+key;
-    renderItems(key,itemsDiv);
+    itemsDiv.className = 'list-items';
+    itemsDiv.id = 'items-' + key;
+    renderItems(key, itemsDiv);
     const form = document.createElement('div');
-    form.className='add-form';
-    form.innerHTML=`<input class="add-input" id="input-${key}" placeholder="Add item…" onkeydown="if(event.key==='Enter')addItem('${key}')"><select class="priority-select" id="pri-${key}"><option value="">—</option><option value="high">High</option><option value="med">Med</option><option value="low">Low</option></select><button class="add-btn" onclick="addItem('${key}')">Add</button>`;
-    body.appendChild(itemsDiv);body.appendChild(form);
-    card.appendChild(hdr);card.appendChild(body);
+    form.className = 'add-form';
+    form.innerHTML = `<input class="add-input" id="input-${key}" placeholder="Add item…" onkeydown="if(event.key==='Enter')addItem('${key}')"><select class="priority-select" id="pri-${key}"><option value="">—</option><option value="high">High</option><option value="med">Med</option><option value="low">Low</option></select><button class="add-btn" onclick="addItem('${key}')">Add</button>`;
+    body.appendChild(itemsDiv); body.appendChild(form);
+    card.appendChild(hdr); card.appendChild(body);
     container.appendChild(card);
   });
 }
 
-function renderItems(key,container) {
+function renderItems(key, container) {
   const items = appData.lists[key].items;
-  container.innerHTML='';
-  if(items.length===0){container.innerHTML='<div class="empty-state">Nothing here yet</div>';return;}
-  const sorted=[...items.filter(i=>!i.done).sort((a,b)=>{const o={high:0,med:1,low:2,'':3};return(o[a.priority]||3)-(o[b.priority]||3);}), ...items.filter(i=>i.done)];
-  sorted.forEach(item=>{
-    const row=document.createElement('div');row.className='list-item';
-    const chk=document.createElement('div');chk.className='item-check'+(item.done?' checked':'');chk.innerHTML=item.done?'✓':'';chk.onclick=()=>toggleDone(key,item.id);
-    const txt=document.createElement('span');txt.className='item-text'+(item.done?' done':'');txt.textContent=item.text;
-    const del=document.createElement('button');del.className='item-delete';del.textContent='×';del.onclick=()=>deleteItem(key,item.id);
-    row.appendChild(chk);row.appendChild(txt);
-    if(item.priority){const p=document.createElement('span');p.className='item-priority priority-'+item.priority;p.textContent=item.priority;row.appendChild(p);}
-    row.appendChild(del);container.appendChild(row);
+  container.innerHTML = '';
+  if (items.length === 0) { container.innerHTML = '<div class="empty-state">Nothing here yet</div>'; return; }
+  const sorted = [
+    ...items.filter(i => !i.done).sort((a, b) => { const o = { high: 0, med: 1, low: 2, '': 3 }; return (o[a.priority] ?? 3) - (o[b.priority] ?? 3); }),
+    ...items.filter(i => i.done)
+  ];
+  sorted.forEach(item => {
+    const row = document.createElement('div'); row.className = 'list-item';
+    const chk = document.createElement('div'); chk.className = 'item-check' + (item.done ? ' checked' : ''); chk.innerHTML = item.done ? '✓' : ''; chk.onclick = () => toggleDone(key, item.id);
+    const txt = document.createElement('span'); txt.className = 'item-text' + (item.done ? ' done' : ''); txt.textContent = item.text;
+    const del = document.createElement('button'); del.className = 'item-delete'; del.textContent = '×'; del.onclick = () => deleteItem(key, item.id);
+    row.appendChild(chk); row.appendChild(txt);
+    if (item.priority) { const p = document.createElement('span'); p.className = 'item-priority priority-' + item.priority; p.textContent = item.priority; row.appendChild(p); }
+    row.appendChild(del); container.appendChild(row);
   });
 }
 
 function toggleList(key) {
-  const body=document.getElementById('body-'+key);
-  const chev=document.getElementById('chev-'+key);
-  const open=body.classList.contains('open');
-  body.classList.toggle('open',!open);
-  chev.textContent=open?'+':'−';
-  if(!open) setTimeout(()=>document.getElementById('input-'+key)?.focus(),100);
+  const body = document.getElementById('body-' + key);
+  const chev = document.getElementById('chev-' + key);
+  const open = body.classList.contains('open');
+  body.classList.toggle('open', !open);
+  chev.textContent = open ? '+' : '−';
+  if (!open) setTimeout(() => document.getElementById('input-' + key)?.focus(), 100);
 }
 
 function updateCount(key) {
-  const el=document.getElementById('count-'+key);
-  if(el) el.textContent=appData.lists[key].items.filter(i=>!i.done).length;
+  const el = document.getElementById('count-' + key);
+  if (el) el.textContent = appData.lists[key].items.filter(i => !i.done).length;
 }
 
 function addItem(key) {
-  const input=document.getElementById('input-'+key);
-  const pri=document.getElementById('pri-'+key);
-  const text=input.value.trim();
-  if(!text) return;
-  const newItem = {id:Date.now(),text,priority:pri.value,done:false};
+  const input = document.getElementById('input-' + key);
+  const pri = document.getElementById('pri-' + key);
+  const text = input.value.trim();
+  if (!text) return;
+  const newItem = { id: Date.now(), text, priority: pri.value, done: false };
   appData.lists[key].items.push(newItem);
   save();
-  pushItem(key, newItem);
-  input.value='';pri.value='';
-  renderItems(key,document.getElementById('items-'+key));
+  input.value = ''; pri.value = '';
+  renderItems(key, document.getElementById('items-' + key));
   updateCount(key);
   showToast('Added ✓');
+  pushItem(key, newItem); // async, no await — UI stays instant
 }
 
-function toggleDone(key,id) {
-  const item=appData.lists[key].items.find(i=>i.id===id);
-  if(item){item.done=!item.done;save();pushItem(key,item);}
-  renderItems(key,document.getElementById('items-'+key));
+function toggleDone(key, id) {
+  const item = appData.lists[key].items.find(i => i.id === id);
+  if (item) { item.done = !item.done; save(); pushItem(key, item); }
+  renderItems(key, document.getElementById('items-' + key));
   updateCount(key);
 }
 
-function deleteItem(key,id) {
-  appData.lists[key].items=appData.lists[key].items.filter(i=>i.id!==id);
+function deleteItem(key, id) {
+  const item = appData.lists[key].items.find(i => i.id === id);
+  if (item) removeFromSupabase(item);
+  appData.lists[key].items = appData.lists[key].items.filter(i => i.id !== id);
   save();
-  removeFromSheet(key,id);
-  renderItems(key,document.getElementById('items-'+key));
+  renderItems(key, document.getElementById('items-' + key));
   updateCount(key);
 }
 
+// ─── SUPABASE SYNC ─────────────────────────────────────────────────────────
+const SB_URL = 'https://yvxpsycxdkcoiyzchupo.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2eHBzeWN4ZGtjb2l5emNodXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NTc5NzAsImV4cCI6MjA5MzIzMzk3MH0.aZFV0BzF18t7WspARKw9bNIplCIOE7CDw4JhsnE7sUA';
 
-// SYNC
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRaAl6hIu_--cQnwFj30ttonyywBKRSJVPm__90Eb9dED7pKjzWs4eoNm6RL_KsMM5ww/exec';
+const { createClient } = window.supabase;
+const sb = createClient(SB_URL, SB_KEY);
 
-async function pushAllToSheet() {
-  // Push every local item up to the sheet first
-  const pushPromises = [];
-  Object.keys(appData.lists).forEach(listKey => {
-    appData.lists[listKey].items.forEach(item => {
-      const url = SCRIPT_URL+'?action=upsert&listKey='+encodeURIComponent(listKey)+'&itemId='+encodeURIComponent(item.id)+'&itemData='+encodeURIComponent(JSON.stringify(item));
-      pushPromises.push(fetch(url,{mode:'cors'}).catch(()=>{}));
-    });
-  });
-  await Promise.all(pushPromises);
+const PLACEHOLDERS = [
+  'Add your favourite recipes here', 'Add restaurants you want to visit',
+  'Add resources or things that help', 'Add movies you want to watch',
+  'Add shows you want to watch', 'Add books you want to read',
+  'Add hobbies you want to explore', 'Add things you want to do together',
+  'Add topics to talk about'
+];
+
+function setSyncStatus(status) {
+  const dot = document.getElementById('syncDot');
+  if (!dot) return;
+  dot.className = 'sync-dot' + (status === 'live' ? ' live' : status === 'syncing' ? ' syncing' : '');
+  dot.title = status === 'live' ? 'Synced' : status === 'syncing' ? 'Syncing…' : 'Offline';
 }
 
-async function pushItem(listKey, item) {
-  try {
-    const url = SCRIPT_URL+'?action=upsert&listKey='+encodeURIComponent(listKey)+'&itemId='+encodeURIComponent(item.id)+'&itemData='+encodeURIComponent(JSON.stringify(item));
-    await fetch(url,{mode:'cors'});
-  } catch(e){}
-}
-
-async function removeFromSheet(listKey, itemId) {
-  try {
-    const url = SCRIPT_URL+'?action=delete&listKey='+encodeURIComponent(listKey)+'&itemId='+encodeURIComponent(itemId);
-    await fetch(url,{mode:'cors'});
-  } catch(e){}
-}
-
-async function syncFromSheet() {
-  try {
-    const res = await fetch(SCRIPT_URL+'?action=getAll',{mode:'cors'});
-    const remote = await res.json();
-    if(remote.error) return;
-    
-    let changed = false;
-    Object.keys(remote).forEach(listKey => {
-      if(!appData.lists[listKey]) return;
-      const remoteItems = remote[listKey];
-      if(!remoteItems || remoteItems.length === 0) return;
-      
-      // Build map of local items by ID
-      const localMap = {};
-      appData.lists[listKey].items.forEach(i => { localMap[String(i.id)] = i; });
-      
-      // Only add remote items that don't exist locally
-      let addedAny = false;
-      remoteItems.forEach(item => {
-        const key = String(item.id);
-        if(!localMap[key]) {
-          // Check it's not a placeholder
-          const placeholders = ['Add your favourite recipes here','Add restaurants you want to visit','Add resources or things that help','Add movies you want to watch','Add shows you want to watch','Add books you want to read','Add hobbies you want to explore','Add things you want to do together','Add topics to talk about'];
-          if(!placeholders.includes(item.text)) {
-            localMap[key] = item;
-            addedAny = true;
-          }
-        } else {
-          // Update done status if changed remotely
-          if(localMap[key].done !== item.done) {
-            localMap[key].done = item.done;
-            addedAny = true;
-          }
-        }
-      });
-      
-      if(addedAny) {
-        appData.lists[listKey].items = Object.values(localMap);
-        changed = true;
-      }
-    });
-    
-    if(changed) {
-      save();
-      const active = document.querySelector('.section.active');
-      if(active) {
-        const id = active.id.replace('section-','');
-        if(['health','fun','home','work'].includes(id)) renderLists(id);
+// Push any local items that have never been sent to Supabase
+async function pushUnsynced() {
+  for (const key of Object.keys(appData.lists)) {
+    for (const item of appData.lists[key].items) {
+      if (!item.sbId && !PLACEHOLDERS.includes(item.text)) {
+        await pushItem(key, item);
       }
     }
-  } catch(e){}
+  }
+}
+
+// Full pull from Supabase — uses remote as source of truth for any list that has data there
+async function syncFromSupabase() {
+  setSyncStatus('syncing');
+  const { data: rows, error } = await sb
+    .from('list_items')
+    .select('*')
+    .order('position', { ascending: true });
+
+  if (error || !rows) { setSyncStatus('offline'); return; }
+
+  // Group remote rows by list_name
+  const remote = {};
+  rows.forEach(row => {
+    if (!remote[row.list_name]) remote[row.list_name] = [];
+    remote[row.list_name].push(row);
+  });
+
+  let changed = false;
+  Object.keys(appData.lists).forEach(key => {
+    if (remote[key] && remote[key].length > 0) {
+      appData.lists[key].items = remote[key].map(row => ({
+        id: row.position || Date.now(),
+        sbId: row.id,
+        text: row.text,
+        priority: row.priority === 'none' ? '' : row.priority,
+        done: row.completed
+      }));
+      changed = true;
+    }
+    // If no remote data for this list, keep local items as-is
+    // (pushUnsynced will send them up on next startSync)
+  });
+
+  if (changed) {
+    save();
+    refreshActiveSection();
+  }
+
+  setSyncStatus('live');
+}
+
+// Push a single item to Supabase (insert or update)
+async function pushItem(listKey, item) {
+  if (PLACEHOLDERS.includes(item.text)) return;
+
+  if (item.sbId) {
+    // Update existing record
+    await sb.from('list_items').update({
+      text: item.text,
+      completed: item.done || false,
+      priority: item.priority || 'none',
+    }).eq('id', item.sbId);
+  } else {
+    // Insert new record
+    const { data, error } = await sb.from('list_items').insert({
+      list_name: listKey,
+      text: item.text,
+      completed: item.done || false,
+      priority: item.priority || 'none',
+      position: item.id,
+    }).select();
+
+    if (!error && data && data[0]) {
+      item.sbId = data[0].id;
+      save(); // Save sbId back to localStorage
+    }
+  }
+}
+
+// Delete a record from Supabase
+async function removeFromSupabase(item) {
+  if (!item.sbId) return;
+  await sb.from('list_items').delete().eq('id', item.sbId);
+}
+
+// Subscribe to real-time changes — when one device changes data, other devices update instantly
+function subscribeRealtime() {
+  sb.channel('list_items_changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'list_items' }, () => {
+      syncFromSupabase();
+    })
+    .subscribe((status) => {
+      if (status === 'SUBSCRIBED') setSyncStatus('live');
+    });
+}
+
+function refreshActiveSection() {
+  const active = document.querySelector('.section.active');
+  if (!active) return;
+  const id = active.id.replace('section-', '');
+  if (['health', 'fun', 'home', 'work'].includes(id)) renderLists(id);
 }
 
 async function startSync() {
-  // Push local data up first, then start pulling
-  await pushAllToSheet();
-  await syncFromSheet();
-  setInterval(syncFromSheet, 30000);
+  setSyncStatus('syncing');
+  await pushUnsynced();    // 1. Push any local items that never made it to Supabase
+  await syncFromSupabase(); // 2. Pull everything — Supabase is source of truth
+  subscribeRealtime();      // 3. Stay live — updates arrive instantly via WebSocket
 }
 
-// GROWTH
-const growthOptions=[
-  {icon:'🧘',label:'Meditation',sub:'10–20 min'},
-  {icon:'🤸',label:'Stretching',sub:'15 min'},
-  {icon:'🚶',label:'Walk',sub:'Fresh air'},
-  {icon:'🧘‍♀️',label:'Yoga',sub:'20–30 min'},
-  {icon:'📓',label:'Journaling',sub:'Write it out'},
-  {icon:'📖',label:'Read',sub:'From your list',link:'fun'},
+// ─── GROWTH ────────────────────────────────────────────────────────────────
+const growthOptions = [
+  { icon: '🧘', label: 'Meditation', sub: '10–20 min' },
+  { icon: '🤸', label: 'Stretching',  sub: '15 min' },
+  { icon: '🚶', label: 'Walk',        sub: 'Fresh air' },
+  { icon: '🧘‍♀️', label: 'Yoga',      sub: '20–30 min' },
+  { icon: '📓', label: 'Journaling',  sub: 'Write it out' },
+  { icon: '📖', label: 'Read',        sub: 'From your list', link: 'fun' },
 ];
 
 function renderGrowth() {
-  const grid=document.getElementById('growth-grid');
-  grid.innerHTML='';
-  growthOptions.forEach(opt=>{
-    const card=document.createElement('div');card.className='growth-card';
-    card.innerHTML=`<div class="growth-icon">${opt.icon}</div><div class="growth-label">${opt.label}</div><div class="growth-sub">${opt.sub}</div>`;
-    card.onclick=()=>{
-      document.querySelectorAll('.growth-card').forEach(c=>c.classList.remove('growth-selected'));
+  const grid = document.getElementById('growth-grid');
+  grid.innerHTML = '';
+  growthOptions.forEach(opt => {
+    const card = document.createElement('div'); card.className = 'growth-card';
+    card.innerHTML = `<div class="growth-icon">${opt.icon}</div><div class="growth-label">${opt.label}</div><div class="growth-sub">${opt.sub}</div>`;
+    card.onclick = () => {
+      document.querySelectorAll('.growth-card').forEach(c => c.classList.remove('growth-selected'));
       card.classList.add('growth-selected');
-      if(opt.link) setTimeout(()=>showSection(opt.link),300);
-      else showToast(opt.label+' — enjoy 🌿');
+      if (opt.link) setTimeout(() => showSection(opt.link), 300);
+      else showToast(opt.label + ' — enjoy');
     };
     grid.appendChild(card);
   });
 }
 
-// NAV
-const navMap={schedule:0,health:1,fun:2,home:3,work:4,growth:5};
+// ─── NAV ───────────────────────────────────────────────────────────────────
+const navMap = { schedule: 0, health: 1, fun: 2, home: 3, work: 4, growth: 5 };
+
 function showSection(id) {
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('section-'+id)?.classList.add('active');
-  const btns=document.querySelectorAll('.nav-btn');
-  if(navMap[id]!==undefined) btns[navMap[id]]?.classList.add('active');
-  if(['health','fun','home','work'].includes(id)) renderLists(id);
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + id)?.classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  if (navMap[id] !== undefined) btns[navMap[id]]?.classList.add('active');
+  if (['health', 'fun', 'home', 'work'].includes(id)) renderLists(id);
 }
 
-// TOAST
+// ─── TOAST ─────────────────────────────────────────────────────────────────
 function showToast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),1800);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
 }
 
-// INIT
+// ─── INIT ──────────────────────────────────────────────────────────────────
 function initApp() {
   appData = loadData();
   renderSchedule();
@@ -586,8 +648,7 @@ function initApp() {
   startSync();
 }
 
-// Start
-if(checkPinSession()) {
+if (checkPinSession()) {
   initApp();
 }
 </script>
