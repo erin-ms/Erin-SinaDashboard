@@ -43,39 +43,31 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .nav-btn{padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;color:var(--muted);white-space:nowrap;transition:all 0.2s;letter-spacing:0.3px;}
 .nav-btn.active{color:var(--text);border-bottom-color:var(--text);}
 
-/* CALENDAR EVENTS */
-.cal-section{padding:16px 20px 0;}
-.cal-section-title{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
-.cal-event{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
-.cal-event:last-child{border-bottom:none;}
-.cal-badge{font-size:9px;font-weight:700;color:white;padding:2px 6px;border-radius:4px;flex-shrink:0;letter-spacing:0.5px;}
-.cal-time{font-size:11px;color:var(--muted);white-space:nowrap;min-width:80px;}
-.cal-name{font-size:13px;flex:1;}
-.cal-empty{font-size:12px;color:var(--muted);font-style:italic;padding:4px 0 12px;}
-.cal-loading{font-size:11px;color:var(--muted);padding:4px 0 12px;font-style:italic;}
-.cal-divider{height:1px;background:var(--border);margin:16px 0 0;}
+/* CALENDAR TAB */
+.cal-tab-bar{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--border);background:var(--bg);}
+.cal-tab-btn{padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;color:var(--muted);transition:all 0.2s;}
+.cal-tab-btn.active{color:var(--text);border-bottom-color:var(--text);}
 
-/* SCHEDULE */
-.schedule-header{padding:16px 20px 12px;display:flex;justify-content:space-between;align-items:center;}
-.schedule-header h2{font-family:'Playfair Display',serif;font-size:18px;font-weight:400;}
-.day-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
-.timeline{padding:0 20px;}
-.time-block{display:flex;gap:14px;margin-bottom:2px;}
-.time-col{width:52px;flex-shrink:0;padding-top:10px;font-size:11px;color:var(--muted);font-weight:300;text-align:right;}
-.block-line{width:1px;background:var(--border);flex-shrink:0;position:relative;}
-.block-dot{width:7px;height:7px;border-radius:50%;background:var(--border);position:absolute;left:-3px;top:13px;}
-.block-dot.current{background:#C2622D;box-shadow:0 0 0 3px rgba(194,98,45,0.2);}
-.block-content{flex:1;padding:8px 12px;border-radius:8px;margin:4px 0;transition:all 0.15s;}
-.block-content:active{opacity:0.8;}
-.block-content.work{background:rgba(139,94,60,0.1);border-left:3px solid var(--work);}
-.block-content.break{background:rgba(120,113,108,0.08);border-left:3px solid var(--border);}
-.block-content.personal{background:rgba(124,92,138,0.1);border-left:3px solid var(--growth);}
-.block-content.health{background:rgba(74,124,89,0.1);border-left:3px solid var(--health);}
-.block-content.social{background:rgba(91,111,166,0.1);border-left:3px solid var(--border);}
-.block-content.mini{background:rgba(194,98,45,0.06);border-left:3px solid rgba(194,98,45,0.3);}
-.block-label{font-size:13px;font-weight:500;color:var(--text);}
-.block-sublabel{font-size:11px;color:var(--muted);margin-top:1px;}
-.section-note{font-size:11px;color:var(--muted);padding:4px 20px 0;font-style:italic;}
+.cal-view{padding:0 20px 20px;}
+.cal-date-header{padding:20px 0 16px;}
+.cal-date-big{font-family:'Playfair Display',serif;font-size:28px;font-weight:400;line-height:1.1;}
+.cal-date-sub{font-size:12px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:8px;}
+.cal-evening-chip{font-size:10px;font-weight:500;color:var(--growth);background:rgba(124,92,138,0.1);padding:2px 8px;border-radius:10px;}
+
+.cal-event-list{display:flex;flex-direction:column;gap:2px;}
+.cal-event-row{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;background:var(--card);border-radius:10px;border:1px solid var(--border);}
+.cal-event-row.allday{border-left:3px solid var(--muted);}
+.cal-event-time-col{min-width:70px;flex-shrink:0;padding-top:1px;}
+.cal-event-time{font-size:11px;color:var(--muted);line-height:1.4;}
+.cal-event-body{flex:1;}
+.cal-event-title{font-size:13px;font-weight:500;line-height:1.3;}
+.cal-event-badge{display:inline-block;font-size:9px;font-weight:700;color:white;padding:1px 5px;border-radius:3px;margin-top:3px;letter-spacing:0.5px;}
+
+.cal-empty{padding:40px 0;text-align:center;color:var(--muted);font-size:13px;font-style:italic;}
+.cal-loading{padding:30px 0;text-align:center;color:var(--muted);font-size:12px;}
+.cal-refresh{display:flex;align-items:center;justify-content:flex-end;padding:8px 0 0;}
+.cal-refresh-btn{font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px 0;}
+.cal-refresh-btn:active{color:var(--text);}
 
 /* LISTS */
 .lists-container{padding:16px 20px;}
@@ -163,7 +155,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <div class="nav">
-  <button class="nav-btn active" onclick="showSection('schedule')">Today</button>
+  <button class="nav-btn active" onclick="showSection('today')">Today</button>
   <button class="nav-btn" onclick="showSection('health')">Health & Food</button>
   <button class="nav-btn" onclick="showSection('fun')">Fun & Culture</button>
   <button class="nav-btn" onclick="showSection('home')">Home & Life</button>
@@ -172,29 +164,39 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <div class="content">
-  <div class="section active" id="section-schedule">
-    <!-- Calendar events -->
-    <div class="cal-section">
-      <div class="cal-section-title">Today's Events</div>
-      <div id="cal-events"><div class="cal-loading">Loading calendar…</div></div>
+
+  <!-- TODAY / CALENDAR -->
+  <div class="section active" id="section-today">
+    <div class="cal-tab-bar">
+      <button class="cal-tab-btn active" id="calTab-erin" onclick="switchCalTab('erin')">Erin</button>
+      <!-- Sina's tab will go here -->
     </div>
-    <div class="cal-divider"></div>
-    <!-- Daily rhythm -->
-    <div class="schedule-header">
-      <h2>Daily Rhythm</h2>
-      <span class="day-label" id="dayLabel"></span>
+    <div class="cal-view">
+      <div class="cal-date-header">
+        <div class="cal-date-big" id="calDateBig"></div>
+        <div class="cal-date-sub">
+          <span id="calDayName"></span>
+          <span class="cal-evening-chip" id="calEveningChip"></span>
+        </div>
+      </div>
+      <div class="cal-refresh">
+        <button class="cal-refresh-btn" onclick="loadCalendarEvents()">↻ Refresh</button>
+      </div>
+      <div class="cal-event-list" id="cal-events">
+        <div class="cal-loading">Loading calendar…</div>
+      </div>
     </div>
-    <p class="section-note">Tap a block to jump to its lists →</p>
-    <div class="timeline" id="timeline"></div>
   </div>
+
   <div class="section" id="section-health"><div class="lists-container" id="lists-health"></div></div>
   <div class="section" id="section-fun"><div class="lists-container" id="lists-fun"></div></div>
   <div class="section" id="section-home"><div class="lists-container" id="lists-home"></div></div>
   <div class="section" id="section-work"><div class="lists-container" id="lists-work"></div></div>
   <div class="section" id="section-growth">
-    <p class="section-note" style="padding-bottom:8px;">Tap what feels right today</p>
+    <p style="font-size:11px;color:var(--muted);padding:12px 20px 8px;font-style:italic;">Tap what feels right today</p>
     <div class="growth-grid" id="growth-grid"></div>
   </div>
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -213,201 +215,156 @@ function checkPinSession() {
   }
   return false;
 }
-
 function pinPress(d) {
   if (pinEntry.length >= 4) return;
-  pinEntry += d;
-  updateDots();
+  pinEntry += d; updateDots();
   if (pinEntry.length === 4) setTimeout(checkPin, 100);
 }
-
-function pinDelete() {
-  pinEntry = pinEntry.slice(0, -1);
-  updateDots();
-}
-
+function pinDelete() { pinEntry = pinEntry.slice(0,-1); updateDots(); }
 function updateDots() {
-  for (let i = 0; i < 4; i++) {
-    const dot = document.getElementById('dot' + i);
+  for (let i=0;i<4;i++) {
+    const dot = document.getElementById('dot'+i);
     dot.classList.toggle('filled', i < pinEntry.length);
     dot.classList.remove('error');
   }
 }
-
 function checkPin() {
   if (pinEntry === CORRECT_PIN) {
     localStorage.setItem(PIN_KEY, Date.now().toString());
     document.getElementById('pinScreen').classList.add('hidden');
     initApp();
   } else {
-    for (let i = 0; i < 4; i++) document.getElementById('dot' + i).classList.add('error');
+    for (let i=0;i<4;i++) document.getElementById('dot'+i).classList.add('error');
     document.getElementById('pinError').classList.add('show');
-    setTimeout(() => {
-      pinEntry = '';
-      updateDots();
-      document.getElementById('pinError').classList.remove('show');
-    }, 1000);
+    setTimeout(() => { pinEntry=''; updateDots(); document.getElementById('pinError').classList.remove('show'); }, 1000);
   }
 }
 
 // ─── DATA ──────────────────────────────────────────────────────────────────
 const STORE = 'es_data_v2';
-
-function makeItem(text) {
-  return { id: Date.now() + Math.floor(Math.random() * 99999), text, priority: '', done: false };
-}
+function makeItem(text) { return { id: Date.now()+Math.floor(Math.random()*99999), text, priority:'', done:false }; }
 
 const DEFAULTS = {
-  groceries:    { name: 'Groceries / Stuff to Buy',   section: 'health', items: [] },
-  recipes:      { name: 'Recipes & Food Ideas',        section: 'health', items: [makeItem('Add your favourite recipes here')] },
-  restaurants:  { name: 'Restaurants to Try',          section: 'health', items: [makeItem('Add restaurants you want to visit')] },
-  mentalHealth: { name: 'Mental Health',               section: 'health', items: [makeItem('Add resources or things that help')] },
-  movies:       { name: 'Movies',                      section: 'fun',    items: [makeItem('Add movies you want to watch')] },
-  shows:        { name: 'Shows',                       section: 'fun',    items: [makeItem('Add shows you want to watch')] },
-  books:        { name: 'Books',                       section: 'fun',    items: [makeItem('Add books you want to read')] },
-  hobbies:      { name: 'Hobbies',                     section: 'fun',    items: [makeItem('Add hobbies you want to explore')] },
-  activities:   { name: 'Activities & Experiences',    section: 'fun',    items: [makeItem('Add things you want to do together')] },
-  tasksErin:    { name: 'Tasks — Erin',                section: 'home',   items: [] },
-  tasksSina:    { name: 'Tasks — Sina',                section: 'home',   items: [] },
-  tasksShared:  { name: 'Tasks — Shared',              section: 'home',   items: [] },
-  discuss:      { name: 'Things to Discuss',           section: 'home',   items: [makeItem('Add topics to talk about')] },
-  workErin:     { name: 'Work — Erin',                 section: 'work',   items: [] },
-  workSina:     { name: 'Work — Sina',                 section: 'work',   items: [] },
-  workShared:   { name: 'Work — Shared',               section: 'work',   items: [] },
+  groceries:    { name:'Groceries / Stuff to Buy',   section:'health', items:[] },
+  recipes:      { name:'Recipes & Food Ideas',        section:'health', items:[makeItem('Add your favourite recipes here')] },
+  restaurants:  { name:'Restaurants to Try',          section:'health', items:[makeItem('Add restaurants you want to visit')] },
+  mentalHealth: { name:'Mental Health',               section:'health', items:[makeItem('Add resources or things that help')] },
+  movies:       { name:'Movies',                      section:'fun',    items:[makeItem('Add movies you want to watch')] },
+  shows:        { name:'Shows',                       section:'fun',    items:[makeItem('Add shows you want to watch')] },
+  books:        { name:'Books',                       section:'fun',    items:[makeItem('Add books you want to read')] },
+  hobbies:      { name:'Hobbies',                     section:'fun',    items:[makeItem('Add hobbies you want to explore')] },
+  activities:   { name:'Activities & Experiences',    section:'fun',    items:[makeItem('Add things you want to do together')] },
+  tasksErin:    { name:'Tasks — Erin',                section:'home',   items:[] },
+  tasksSina:    { name:'Tasks — Sina',                section:'home',   items:[] },
+  tasksShared:  { name:'Tasks — Shared',              section:'home',   items:[] },
+  discuss:      { name:'Things to Discuss',           section:'home',   items:[makeItem('Add topics to talk about')] },
+  workErin:     { name:'Work — Erin',                 section:'work',   items:[] },
+  workSina:     { name:'Work — Sina',                 section:'work',   items:[] },
+  workShared:   { name:'Work — Shared',               section:'work',   items:[] },
 };
 
 let appData;
-
 function loadData() {
   try {
     const raw = localStorage.getItem(STORE);
-    if (raw) {
-      const d = JSON.parse(raw);
-      Object.keys(DEFAULTS).forEach(k => {
-        if (!d.lists[k]) d.lists[k] = JSON.parse(JSON.stringify(DEFAULTS[k]));
-      });
-      return d;
-    }
+    if (raw) { const d=JSON.parse(raw); Object.keys(DEFAULTS).forEach(k=>{if(!d.lists[k])d.lists[k]=JSON.parse(JSON.stringify(DEFAULTS[k]));}); return d; }
     const old = localStorage.getItem('es_data_v1');
-    if (old) {
-      const d = JSON.parse(old);
-      Object.keys(DEFAULTS).forEach(k => {
-        if (!d.lists[k]) d.lists[k] = JSON.parse(JSON.stringify(DEFAULTS[k]));
-      });
-      return d;
-    }
+    if (old) { const d=JSON.parse(old); Object.keys(DEFAULTS).forEach(k=>{if(!d.lists[k])d.lists[k]=JSON.parse(JSON.stringify(DEFAULTS[k]));}); return d; }
   } catch(e) {}
   return { lists: JSON.parse(JSON.stringify(DEFAULTS)) };
 }
-
-function save() {
-  localStorage.setItem(STORE, JSON.stringify(appData));
-}
+function save() { localStorage.setItem(STORE, JSON.stringify(appData)); }
 
 // ─── CALENDAR ──────────────────────────────────────────────────────────────
-const CALENDARS = [
-  {
-    url: 'https://calendar.google.com/calendar/ical/erin%40erinshellington.com/public/basic.ics',
-    label: 'E', name: 'Erin', color: '#4A7C59'
-  },
-  {
-    url: 'https://calendar.google.com/calendar/ical/erin.shellington%40track3.org/private-083d425f8943a11f618bbcb20031a0ea/basic.ics',
-    label: 'W', name: 'Work', color: '#8B5E3C'
-  },
-  // Add Sina's calendar here when ready:
-  // { url: 'SINA_ICS_URL', label: 'S', name: 'Sina', color: '#5B6FA6' },
-];
+const CALENDARS = {
+  erin: [
+    { url:'https://calendar.google.com/calendar/ical/erin%40erinshellington.com/public/basic.ics', label:'E', color:'#4A7C59' },
+    { url:'https://calendar.google.com/calendar/ical/erin.shellington%40track3.org/private-083d425f8943a11f618bbcb20031a0ea/basic.ics', label:'W', color:'#8B5E3C' },
+  ],
+  // sina: [
+  //   { url:'SINA_ICS_URL', label:'S', color:'#5B6FA6' },
+  // ],
+};
+
+const EVENING_THEMES = { 0:'Work / Relationship', 1:'Work', 2:'Personal', 3:'Work', 4:'Personal', 5:'Relationship', 6:'Family / Adventure' };
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+let activeCalTab = 'erin';
+
+function switchCalTab(who) {
+  activeCalTab = who;
+  document.querySelectorAll('.cal-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('calTab-'+who)?.classList.add('active');
+  loadCalendarEvents();
+}
+
+function renderDateHeader() {
+  const now = new Date();
+  document.getElementById('dateStr').textContent = now.toLocaleDateString('en-CA', { month:'short', day:'numeric' });
+  document.getElementById('calDateBig').textContent = DAYS[now.getDay()]+', '+MONTHS[now.getMonth()]+' '+now.getDate();
+  document.getElementById('calDayName').textContent = now.getFullYear();
+  document.getElementById('calEveningChip').textContent = 'Tonight: '+EVENING_THEMES[now.getDay()];
+}
 
 const CORS_PROXY = 'https://corsproxy.io/?';
 
 function unfoldICS(text) {
-  return text.replace(/\r\n[ \t]/g, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  return text.replace(/\r\n[ \t]/g,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
 }
 
 function parseDTValue(fullKey, val) {
   const v = val.trim();
   const isAllDay = fullKey.includes('VALUE=DATE') || /^\d{8}$/.test(v);
   if (isAllDay) {
-    return {
-      date: new Date(parseInt(v.slice(0,4)), parseInt(v.slice(4,6))-1, parseInt(v.slice(6,8))),
-      allDay: true
-    };
+    return { date:new Date(parseInt(v.slice(0,4)), parseInt(v.slice(4,6))-1, parseInt(v.slice(6,8))), allDay:true };
   }
   const isUTC = v.endsWith('Z');
-  const yr = parseInt(v.slice(0,4));
-  const mo = parseInt(v.slice(4,6)) - 1;
-  const dy = parseInt(v.slice(6,8));
-  const hr = parseInt(v.slice(9,11)) || 0;
-  const mn = parseInt(v.slice(11,13)) || 0;
-  const sc = parseInt(v.slice(13,15)) || 0;
-  return {
-    date: isUTC ? new Date(Date.UTC(yr,mo,dy,hr,mn,sc)) : new Date(yr,mo,dy,hr,mn,sc),
-    allDay: false
-  };
+  const yr=parseInt(v.slice(0,4)), mo=parseInt(v.slice(4,6))-1, dy=parseInt(v.slice(6,8));
+  const hr=parseInt(v.slice(9,11))||0, mn=parseInt(v.slice(11,13))||0, sc=parseInt(v.slice(13,15))||0;
+  return { date: isUTC ? new Date(Date.UTC(yr,mo,dy,hr,mn,sc)) : new Date(yr,mo,dy,hr,mn,sc), allDay:false };
 }
 
 function parseICS(text, calConfig) {
   const lines = unfoldICS(text).split('\n');
   const events = [];
-  let inEvent = false;
-  let cur = {};
-
+  let inEvent = false, cur = {};
   for (const rawLine of lines) {
     const line = rawLine.trimEnd();
-    if (line === 'BEGIN:VEVENT') { inEvent = true; cur = {}; continue; }
+    if (line === 'BEGIN:VEVENT') { inEvent=true; cur={}; continue; }
     if (line === 'END:VEVENT') {
-      inEvent = false;
-      if (cur.summary && cur.dtstart && cur.status !== 'CANCELLED') {
-        events.push({ ...cur, cal: calConfig });
-      }
+      inEvent=false;
+      if (cur.summary && cur.dtstart && cur.status !== 'CANCELLED') events.push({...cur, cal:calConfig});
       continue;
     }
     if (!inEvent) continue;
-
     const ci = line.indexOf(':');
     if (ci === -1) continue;
-    const fullKey = line.slice(0, ci).toUpperCase();
+    const fullKey = line.slice(0,ci).toUpperCase();
     const baseKey = fullKey.split(';')[0];
-    const val = line.slice(ci + 1);
-
-    if (baseKey === 'SUMMARY') {
-      cur.summary = val.replace(/\\,/g, ',').replace(/\\n/g, ' ').replace(/\\/g, '').trim();
-    } else if (baseKey === 'DTSTART') {
-      try { cur.dtstart = parseDTValue(fullKey, val); } catch(e) {}
-    } else if (baseKey === 'DTEND') {
-      try { cur.dtend = parseDTValue(fullKey, val); } catch(e) {}
-    } else if (baseKey === 'RRULE') {
-      cur.rrule = val;
-    } else if (baseKey === 'EXDATE') {
-      if (!cur.exdates) cur.exdates = [];
-      cur.exdates.push(val);
-    } else if (baseKey === 'STATUS') {
-      cur.status = val.trim();
-    }
+    const val = line.slice(ci+1);
+    if (baseKey === 'SUMMARY') cur.summary = val.replace(/\\,/g,',').replace(/\\n/g,' ').replace(/\\/g,'').trim();
+    else if (baseKey === 'DTSTART') { try { cur.dtstart = parseDTValue(fullKey, val); } catch(e){} }
+    else if (baseKey === 'DTEND')   { try { cur.dtend   = parseDTValue(fullKey, val); } catch(e){} }
+    else if (baseKey === 'RRULE')   { cur.rrule = val; }
+    else if (baseKey === 'EXDATE')  { if (!cur.exdates) cur.exdates=[]; cur.exdates.push(val); }
+    else if (baseKey === 'STATUS')  { cur.status = val.trim(); }
   }
-
   return events;
 }
 
 function occursToday(event, today) {
   if (!event.dtstart) return false;
-
-  const todayY = today.getFullYear();
-  const todayM = today.getMonth();
-  const todayD = today.getDate();
-  const todayStart = new Date(todayY, todayM, todayD);
-  const todayEnd   = new Date(todayY, todayM, todayD + 1);
-
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const todayEnd   = new Date(today.getFullYear(), today.getMonth(), today.getDate()+1);
   const start    = event.dtstart.date;
   const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
 
-  // Check exclusion dates
   if (event.exdates) {
     for (const ex of event.exdates) {
       try {
         const exDay = parseDTValue('EXDATE', ex).date;
-        const exDayOnly = new Date(exDay.getFullYear(), exDay.getMonth(), exDay.getDate());
-        if (exDayOnly.getTime() === todayStart.getTime()) return false;
+        if (new Date(exDay.getFullYear(),exDay.getMonth(),exDay.getDate()).getTime() === todayStart.getTime()) return false;
       } catch(e) {}
     }
   }
@@ -416,94 +373,79 @@ function occursToday(event, today) {
     if (event.dtstart.allDay) {
       const endDay = event.dtend
         ? new Date(event.dtend.date.getFullYear(), event.dtend.date.getMonth(), event.dtend.date.getDate())
-        : new Date(startDay.getTime() + 86400000);
+        : new Date(startDay.getTime()+86400000);
       return todayStart >= startDay && todayStart < endDay;
     }
     return start >= todayStart && start < todayEnd;
   }
 
-  // Recurring event
   if (todayStart < startDay) return false;
-
   const rules = {};
-  event.rrule.split(';').forEach(p => {
-    const eq = p.indexOf('=');
-    if (eq !== -1) rules[p.slice(0, eq)] = p.slice(eq + 1);
-  });
+  event.rrule.split(';').forEach(p => { const eq=p.indexOf('='); if(eq!==-1) rules[p.slice(0,eq)]=p.slice(eq+1); });
 
   if (rules.UNTIL) {
     try {
       const until = parseDTValue('UNTIL', rules.UNTIL).date;
-      const untilDay = new Date(until.getFullYear(), until.getMonth(), until.getDate());
-      if (todayStart > untilDay) return false;
+      if (todayStart > new Date(until.getFullYear(),until.getMonth(),until.getDate())) return false;
     } catch(e) {}
   }
 
-  const freq     = rules.FREQ;
-  const interval = parseInt(rules.INTERVAL || '1');
+  const freq = rules.FREQ, interval = parseInt(rules.INTERVAL||'1');
 
   if (freq === 'DAILY') {
-    const diff = Math.round((todayStart - startDay) / 86400000);
+    const diff = Math.round((todayStart-startDay)/86400000);
     return diff >= 0 && diff % interval === 0;
   }
-
   if (freq === 'WEEKLY') {
-    const WD_NAMES = ['SU','MO','TU','WE','TH','FR','SA'];
-    const todayWD  = WD_NAMES[today.getDay()];
-    const byday    = rules.BYDAY
-      ? rules.BYDAY.split(',').map(d => d.replace(/[-+\d]/g, ''))
-      : [WD_NAMES[start.getDay()]];
+    const WD = ['SU','MO','TU','WE','TH','FR','SA'];
+    const todayWD = WD[today.getDay()];
+    const byday = rules.BYDAY ? rules.BYDAY.split(',').map(d=>d.replace(/[-+\d]/g,'')) : [WD[start.getDay()]];
     if (!byday.includes(todayWD)) return false;
-    const weeksDiff = Math.floor((todayStart - startDay) / (7 * 86400000));
-    return weeksDiff >= 0 && weeksDiff % interval === 0;
+    const wkDiff = Math.floor((todayStart-startDay)/(7*86400000));
+    return wkDiff >= 0 && wkDiff % interval === 0;
   }
-
   if (freq === 'MONTHLY') {
     if (today.getDate() !== start.getDate()) return false;
-    const mDiff = (today.getFullYear() - start.getFullYear()) * 12 + (today.getMonth() - start.getMonth());
+    const mDiff = (today.getFullYear()-start.getFullYear())*12+(today.getMonth()-start.getMonth());
     return mDiff >= 0 && mDiff % interval === 0;
   }
-
   if (freq === 'YEARLY') {
-    if (today.getMonth() !== start.getMonth() || today.getDate() !== start.getDate()) return false;
-    const yDiff = today.getFullYear() - start.getFullYear();
-    return yDiff >= 0 && yDiff % interval === 0;
+    if (today.getMonth()!==start.getMonth()||today.getDate()!==start.getDate()) return false;
+    return today.getFullYear() >= start.getFullYear();
   }
-
   return false;
 }
 
-function fmtTime(dt, allDay) {
-  if (allDay) return 'All day';
-  return dt.toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit', hour12: true })
-    .toLowerCase().replace(' ', '');
+function fmtTime(dt) {
+  return dt.toLocaleTimeString('en-CA', { hour:'numeric', minute:'2-digit', hour12:true })
+    .toLowerCase().replace(' ','');
 }
 
 async function fetchCalendar(cal) {
   try {
     const res = await fetch(CORS_PROXY + encodeURIComponent(cal.url));
     if (!res.ok) return [];
-    const text = await res.text();
-    return parseICS(text, cal);
+    return parseICS(await res.text(), cal);
   } catch(e) { return []; }
 }
 
 async function loadCalendarEvents() {
   const container = document.getElementById('cal-events');
   if (!container) return;
+  container.innerHTML = '<div class="cal-loading">Loading…</div>';
 
+  const cals = CALENDARS[activeCalTab] || [];
   const today = new Date();
   let allEvents = [];
 
   try {
-    const results = await Promise.all(CALENDARS.map(c => fetchCalendar(c)));
+    const results = await Promise.all(cals.map(c => fetchCalendar(c)));
     results.forEach(evs => allEvents.push(...evs));
   } catch(e) {}
 
   const todayEvents = allEvents
     .filter(e => occursToday(e, today))
-    .sort((a, b) => {
-      // All-day first, then by start time
+    .sort((a,b) => {
       if (a.dtstart.allDay && !b.dtstart.allDay) return -1;
       if (!a.dtstart.allDay && b.dtstart.allDay) return 1;
       return a.dtstart.date - b.dtstart.date;
@@ -515,84 +457,25 @@ async function loadCalendarEvents() {
   }
 
   container.innerHTML = todayEvents.map(e => {
-    const timeStr = e.dtstart.allDay
-      ? 'All day'
-      : fmtTime(e.dtstart.date, false) + (e.dtend ? ' – ' + fmtTime(e.dtend.date, false) : '');
-    return `<div class="cal-event">
-      <span class="cal-badge" style="background:${e.cal.color}">${e.cal.label}</span>
-      <span class="cal-time">${timeStr}</span>
-      <span class="cal-name">${e.summary}</span>
+    const isAllDay = e.dtstart.allDay;
+    const timeStr = isAllDay ? 'All day'
+      : fmtTime(e.dtstart.date) + (e.dtend ? '<br>' + fmtTime(e.dtend.date) : '');
+    return `<div class="cal-event-row${isAllDay?' allday':''}">
+      <div class="cal-event-time-col"><div class="cal-event-time">${timeStr}</div></div>
+      <div class="cal-event-body">
+        <div class="cal-event-title">${e.summary}</div>
+        <span class="cal-event-badge" style="background:${e.cal.color}">${e.cal.label}</span>
+      </div>
     </div>`;
   }).join('');
 }
 
-// ─── SCHEDULE ──────────────────────────────────────────────────────────────
-const schedule = [
-  { time: '5:45',  label: 'Wake up',                            type: 'personal' },
-  { time: '6:00',  label: 'Gym',                                type: 'health',   sub: '2 hours' },
-  { time: '8:00',  label: 'Breakfast + Shower + Food tracking', type: 'health' },
-  { time: '9:00',  label: 'Work Block 1',                       type: 'work',     link: 'work' },
-  { time: '9:50',  label: 'Break',                              type: 'break' },
-  { time: '10:00', label: 'Work Block 2',                       type: 'work',     link: 'work' },
-  { time: '10:50', label: 'Break 2',                            type: 'break' },
-  { time: '11:00', label: 'Work Block 3',                       type: 'work',     link: 'work' },
-  { time: '12:00', label: 'Mini Work Block',                    type: 'mini',     link: 'work' },
-  { time: '12:30', label: 'Walk + Strength Training + Lunch',   type: 'health' },
-  { time: '1:30',  label: 'Mini Block 2',                       type: 'mini',     sub: 'PG calls etc', link: 'work' },
-  { time: '2:00',  label: 'Work Block 4',                       type: 'work',     link: 'work' },
-  { time: '2:50',  label: 'Mini Break',                         type: 'break' },
-  { time: '3:00',  label: 'Work Block 5',                       type: 'work',     link: 'work' },
-  { time: '3:50',  label: 'Break',                              type: 'break' },
-  { time: '4:00',  label: 'Work Block 6',                       type: 'work',     link: 'work' },
-  { time: '4:50',  label: 'Mini Block',                         type: 'mini',     link: 'work' },
-  { time: '5:30',  label: 'Personal Time',                      type: 'personal', sub: 'Meditation, stretching', link: 'growth' },
-  { time: '6:00',  label: 'Dinner + Relationship Time',         type: 'social' },
-  { time: '7:00',  label: 'Work Block 7',                       type: 'work',     sub: 'Growth / personal', link: 'work' },
-  { time: '8:30',  label: 'Bed Time Routine',                   type: 'personal' },
-  { time: '9:00',  label: 'TV',                                 type: 'personal', sub: 'Wind down', link: 'fun' },
-  { time: '10:00', label: 'Sleep',                              type: 'break' },
-];
-
-const eveningThemes = { 0:'Work/Relationship', 1:'Work', 2:'Personal', 3:'Work', 4:'Personal', 5:'Relationship', 6:'Family/Adventure' };
-
-function parseTime(s) { const [h,m] = s.split(':').map(Number); return h*60+(m||0); }
-
-function renderSchedule() {
-  const now = new Date();
-  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  document.getElementById('dayLabel').textContent = days[now.getDay()];
-  document.getElementById('dateStr').textContent = now.toLocaleDateString('en-CA', { month:'short', day:'numeric' });
-  const cur = now.getHours()*60 + now.getMinutes();
-  const tl = document.getElementById('timeline');
-  tl.innerHTML = '';
-  schedule.forEach((b, i) => {
-    const bm = parseTime(b.time);
-    const nm = i < schedule.length-1 ? parseTime(schedule[i+1].time) : bm+60;
-    const isCur = cur >= bm && cur < nm;
-    const row = document.createElement('div'); row.className = 'time-block';
-    const tc = document.createElement('div'); tc.className = 'time-col'; tc.textContent = b.time;
-    const line = document.createElement('div'); line.className = 'block-line';
-    const dot = document.createElement('div'); dot.className = 'block-dot'+(isCur?' current':''); line.appendChild(dot);
-    const c = document.createElement('div'); c.className = 'block-content '+b.type;
-    if (isCur) c.style.outline = '2px solid rgba(194,98,45,0.4)';
-    const lbl = document.createElement('div'); lbl.className = 'block-label'; lbl.textContent = b.label+(b.link?' →':''); c.appendChild(lbl);
-    if (b.sub) { const s = document.createElement('div'); s.className = 'block-sublabel'; s.textContent = b.sub; c.appendChild(s); }
-    if (b.link) { c.style.cursor = 'pointer'; c.onclick = () => showSection(b.link); }
-    row.appendChild(tc); row.appendChild(line); row.appendChild(c);
-    tl.appendChild(row);
-  });
-  const note = document.createElement('div');
-  note.style.cssText = 'padding:12px 20px 20px;font-size:12px;color:var(--muted);font-style:italic;';
-  note.textContent = 'Tonight: '+eveningThemes[now.getDay()];
-  tl.appendChild(note);
-}
-
 // ─── LISTS ─────────────────────────────────────────────────────────────────
 const sectionOrder = {
-  health: ['groceries','recipes','restaurants','mentalHealth'],
-  fun:    ['movies','shows','books','hobbies','activities'],
-  home:   ['tasksErin','tasksSina','tasksShared','discuss'],
-  work:   ['workErin','workSina','workShared'],
+  health:['groceries','recipes','restaurants','mentalHealth'],
+  fun:   ['movies','shows','books','hobbies','activities'],
+  home:  ['tasksErin','tasksSina','tasksShared','discuss'],
+  work:  ['workErin','workSina','workShared'],
 };
 
 function renderLists(sid) {
@@ -600,16 +483,16 @@ function renderLists(sid) {
   container.innerHTML = '';
   sectionOrder[sid].forEach(key => {
     const list = appData.lists[key];
-    const activeCount = list.items.filter(i => !i.done).length;
-    const card = document.createElement('div'); card.className = 'list-card';
-    const hdr = document.createElement('div'); hdr.className = 'list-card-header';
-    hdr.innerHTML = `<span class="list-card-title">${list.name}</span><div class="list-card-meta"><span class="item-count" id="count-${key}">${activeCount}</span><button class="expand-btn" id="chev-${key}">+</button></div>`;
-    hdr.onclick = () => toggleList(key);
-    const body = document.createElement('div'); body.className = 'list-body'; body.id = 'body-'+key;
-    const itemsDiv = document.createElement('div'); itemsDiv.className = 'list-items'; itemsDiv.id = 'items-'+key;
-    renderItems(key, itemsDiv);
-    const form = document.createElement('div'); form.className = 'add-form';
-    form.innerHTML = `<input class="add-input" id="input-${key}" placeholder="Add item…" onkeydown="if(event.key==='Enter')addItem('${key}')"><select class="priority-select" id="pri-${key}"><option value="">—</option><option value="high">High</option><option value="med">Med</option><option value="low">Low</option></select><button class="add-btn" onclick="addItem('${key}')">Add</button>`;
+    const activeCount = list.items.filter(i=>!i.done).length;
+    const card = document.createElement('div'); card.className='list-card';
+    const hdr = document.createElement('div'); hdr.className='list-card-header';
+    hdr.innerHTML=`<span class="list-card-title">${list.name}</span><div class="list-card-meta"><span class="item-count" id="count-${key}">${activeCount}</span><button class="expand-btn" id="chev-${key}">+</button></div>`;
+    hdr.onclick=()=>toggleList(key);
+    const body=document.createElement('div'); body.className='list-body'; body.id='body-'+key;
+    const itemsDiv=document.createElement('div'); itemsDiv.className='list-items'; itemsDiv.id='items-'+key;
+    renderItems(key,itemsDiv);
+    const form=document.createElement('div'); form.className='add-form';
+    form.innerHTML=`<input class="add-input" id="input-${key}" placeholder="Add item…" onkeydown="if(event.key==='Enter')addItem('${key}')"><select class="priority-select" id="pri-${key}"><option value="">—</option><option value="high">High</option><option value="med">Med</option><option value="low">Low</option></select><button class="add-btn" onclick="addItem('${key}')">Add</button>`;
     body.appendChild(itemsDiv); body.appendChild(form);
     card.appendChild(hdr); card.appendChild(body);
     container.appendChild(card);
@@ -618,195 +501,125 @@ function renderLists(sid) {
 
 function renderItems(key, container) {
   const items = appData.lists[key].items;
-  container.innerHTML = '';
-  if (items.length === 0) { container.innerHTML = '<div class="empty-state">Nothing here yet</div>'; return; }
-  const sorted = [
-    ...items.filter(i => !i.done).sort((a,b) => { const o={high:0,med:1,low:2,'':3}; return (o[a.priority]??3)-(o[b.priority]??3); }),
-    ...items.filter(i => i.done)
-  ];
-  sorted.forEach(item => {
-    const row = document.createElement('div'); row.className = 'list-item';
-    const chk = document.createElement('div'); chk.className = 'item-check'+(item.done?' checked':''); chk.innerHTML = item.done?'✓':''; chk.onclick = () => toggleDone(key, item.id);
-    const txt = document.createElement('span'); txt.className = 'item-text'+(item.done?' done':''); txt.textContent = item.text;
-    const del = document.createElement('button'); del.className = 'item-delete'; del.textContent = '×'; del.onclick = () => deleteItem(key, item.id);
+  container.innerHTML='';
+  if (items.length===0) { container.innerHTML='<div class="empty-state">Nothing here yet</div>'; return; }
+  const sorted=[...items.filter(i=>!i.done).sort((a,b)=>{const o={high:0,med:1,low:2,'':3};return(o[a.priority]??3)-(o[b.priority]??3);}), ...items.filter(i=>i.done)];
+  sorted.forEach(item=>{
+    const row=document.createElement('div'); row.className='list-item';
+    const chk=document.createElement('div'); chk.className='item-check'+(item.done?' checked':''); chk.innerHTML=item.done?'✓':''; chk.onclick=()=>toggleDone(key,item.id);
+    const txt=document.createElement('span'); txt.className='item-text'+(item.done?' done':''); txt.textContent=item.text;
+    const del=document.createElement('button'); del.className='item-delete'; del.textContent='×'; del.onclick=()=>deleteItem(key,item.id);
     row.appendChild(chk); row.appendChild(txt);
-    if (item.priority) { const p = document.createElement('span'); p.className = 'item-priority priority-'+item.priority; p.textContent = item.priority; row.appendChild(p); }
+    if(item.priority){const p=document.createElement('span');p.className='item-priority priority-'+item.priority;p.textContent=item.priority;row.appendChild(p);}
     row.appendChild(del); container.appendChild(row);
   });
 }
 
 function toggleList(key) {
-  const body = document.getElementById('body-'+key);
-  const chev = document.getElementById('chev-'+key);
-  const open = body.classList.contains('open');
-  body.classList.toggle('open', !open);
-  chev.textContent = open ? '+' : '−';
-  if (!open) setTimeout(() => document.getElementById('input-'+key)?.focus(), 100);
+  const body=document.getElementById('body-'+key), chev=document.getElementById('chev-'+key);
+  const open=body.classList.contains('open');
+  body.classList.toggle('open',!open); chev.textContent=open?'+':'−';
+  if(!open) setTimeout(()=>document.getElementById('input-'+key)?.focus(),100);
 }
-
 function updateCount(key) {
-  const el = document.getElementById('count-'+key);
-  if (el) el.textContent = appData.lists[key].items.filter(i => !i.done).length;
+  const el=document.getElementById('count-'+key);
+  if(el) el.textContent=appData.lists[key].items.filter(i=>!i.done).length;
 }
-
 function addItem(key) {
-  const input = document.getElementById('input-'+key);
-  const pri   = document.getElementById('pri-'+key);
-  const text  = input.value.trim();
-  if (!text) return;
-  const newItem = { id: Date.now(), text, priority: pri.value, done: false };
-  appData.lists[key].items.push(newItem);
-  save();
-  input.value = ''; pri.value = '';
-  renderItems(key, document.getElementById('items-'+key));
-  updateCount(key);
-  showToast('Added ✓');
-  pushItem(key, newItem);
+  const input=document.getElementById('input-'+key), pri=document.getElementById('pri-'+key);
+  const text=input.value.trim(); if(!text) return;
+  const newItem={id:Date.now(),text,priority:pri.value,done:false};
+  appData.lists[key].items.push(newItem); save();
+  input.value=''; pri.value='';
+  renderItems(key,document.getElementById('items-'+key)); updateCount(key);
+  showToast('Added ✓'); pushItem(key,newItem);
 }
-
-function toggleDone(key, id) {
-  const item = appData.lists[key].items.find(i => i.id === id);
-  if (item) { item.done = !item.done; save(); pushItem(key, item); }
-  renderItems(key, document.getElementById('items-'+key));
-  updateCount(key);
+function toggleDone(key,id) {
+  const item=appData.lists[key].items.find(i=>i.id===id);
+  if(item){item.done=!item.done;save();pushItem(key,item);}
+  renderItems(key,document.getElementById('items-'+key)); updateCount(key);
 }
-
-function deleteItem(key, id) {
-  const item = appData.lists[key].items.find(i => i.id === id);
-  if (item) removeFromSupabase(item);
-  appData.lists[key].items = appData.lists[key].items.filter(i => i.id !== id);
-  save();
-  renderItems(key, document.getElementById('items-'+key));
-  updateCount(key);
+function deleteItem(key,id) {
+  const item=appData.lists[key].items.find(i=>i.id===id);
+  if(item) removeFromSupabase(item);
+  appData.lists[key].items=appData.lists[key].items.filter(i=>i.id!==id); save();
+  renderItems(key,document.getElementById('items-'+key)); updateCount(key);
 }
 
 // ─── SUPABASE SYNC ─────────────────────────────────────────────────────────
-const SB_URL = 'https://yvxpsycxdkcoiyzchupo.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2eHBzeWN4ZGtjb2l5emNodXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NTc5NzAsImV4cCI6MjA5MzIzMzk3MH0.aZFV0BzF18t7WspARKw9bNIplCIOE7CDw4JhsnE7sUA';
-const { createClient } = window.supabase;
-const sb = createClient(SB_URL, SB_KEY);
+const SB_URL='https://yvxpsycxdkcoiyzchupo.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2eHBzeWN4ZGtjb2l5emNodXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NTc5NzAsImV4cCI6MjA5MzIzMzk3MH0.aZFV0BzF18t7WspARKw9bNIplCIOE7CDw4JhsnE7sUA';
+const {createClient}=window.supabase;
+const sb=createClient(SB_URL,SB_KEY);
 
-const PLACEHOLDERS = [
-  'Add your favourite recipes here','Add restaurants you want to visit',
-  'Add resources or things that help','Add movies you want to watch',
-  'Add shows you want to watch','Add books you want to read',
-  'Add hobbies you want to explore','Add things you want to do together',
-  'Add topics to talk about'
-];
+const PLACEHOLDERS=['Add your favourite recipes here','Add restaurants you want to visit','Add resources or things that help','Add movies you want to watch','Add shows you want to watch','Add books you want to read','Add hobbies you want to explore','Add things you want to do together','Add topics to talk about'];
 
-function setSyncStatus(status) {
-  const dot = document.getElementById('syncDot');
-  if (!dot) return;
-  dot.className = 'sync-dot'+(status==='live'?' live':status==='syncing'?' syncing':'');
-  dot.title = status==='live'?'Synced':status==='syncing'?'Syncing…':'Offline';
+function setSyncStatus(s) {
+  const dot=document.getElementById('syncDot'); if(!dot) return;
+  dot.className='sync-dot'+(s==='live'?' live':s==='syncing'?' syncing':'');
+  dot.title=s==='live'?'Synced':s==='syncing'?'Syncing…':'Offline';
 }
-
 async function pushUnsynced() {
-  for (const key of Object.keys(appData.lists)) {
-    for (const item of appData.lists[key].items) {
-      if (!item.sbId && !PLACEHOLDERS.includes(item.text)) {
-        await pushItem(key, item);
-      }
-    }
-  }
+  for(const key of Object.keys(appData.lists))
+    for(const item of appData.lists[key].items)
+      if(!item.sbId&&!PLACEHOLDERS.includes(item.text)) await pushItem(key,item);
 }
-
 async function syncFromSupabase() {
   setSyncStatus('syncing');
-  const { data: rows, error } = await sb.from('list_items').select('*').order('position', { ascending: true });
-  if (error || !rows) { setSyncStatus('offline'); return; }
-
-  const remote = {};
-  rows.forEach(row => {
-    if (!remote[row.list_name]) remote[row.list_name] = [];
-    remote[row.list_name].push(row);
-  });
-
-  let changed = false;
-  Object.keys(appData.lists).forEach(key => {
-    if (remote[key] && remote[key].length > 0) {
-      appData.lists[key].items = remote[key].map(row => ({
-        id: row.position || Date.now(),
-        sbId: row.id,
-        text: row.text,
-        priority: row.priority === 'none' ? '' : row.priority,
-        done: row.completed
-      }));
-      changed = true;
+  const {data:rows,error}=await sb.from('list_items').select('*').order('position',{ascending:true});
+  if(error||!rows){setSyncStatus('offline');return;}
+  const remote={};
+  rows.forEach(row=>{if(!remote[row.list_name])remote[row.list_name]=[];remote[row.list_name].push(row);});
+  let changed=false;
+  Object.keys(appData.lists).forEach(key=>{
+    if(remote[key]&&remote[key].length>0){
+      appData.lists[key].items=remote[key].map(row=>({id:row.position||Date.now(),sbId:row.id,text:row.text,priority:row.priority==='none'?'':row.priority,done:row.completed}));
+      changed=true;
     }
   });
-
-  if (changed) { save(); refreshActiveSection(); }
+  if(changed){save();refreshActiveSection();}
   setSyncStatus('live');
 }
-
-async function pushItem(listKey, item) {
-  if (PLACEHOLDERS.includes(item.text)) return;
-  if (item.sbId) {
-    await sb.from('list_items').update({
-      text: item.text,
-      completed: item.done || false,
-      priority: item.priority || 'none',
-    }).eq('id', item.sbId);
+async function pushItem(listKey,item) {
+  if(PLACEHOLDERS.includes(item.text)) return;
+  if(item.sbId){
+    await sb.from('list_items').update({text:item.text,completed:item.done||false,priority:item.priority||'none'}).eq('id',item.sbId);
   } else {
-    const { data, error } = await sb.from('list_items').insert({
-      list_name: listKey,
-      text: item.text,
-      completed: item.done || false,
-      priority: item.priority || 'none',
-      position: item.id,
-    }).select();
-    if (!error && data && data[0]) { item.sbId = data[0].id; save(); }
+    const {data,error}=await sb.from('list_items').insert({list_name:listKey,text:item.text,completed:item.done||false,priority:item.priority||'none',position:item.id}).select();
+    if(!error&&data&&data[0]){item.sbId=data[0].id;save();}
   }
 }
-
-async function removeFromSupabase(item) {
-  if (!item.sbId) return;
-  await sb.from('list_items').delete().eq('id', item.sbId);
-}
-
+async function removeFromSupabase(item) { if(item.sbId) await sb.from('list_items').delete().eq('id',item.sbId); }
 function subscribeRealtime() {
   sb.channel('list_items_changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'list_items' }, () => {
-      syncFromSupabase();
-    })
-    .subscribe(status => { if (status === 'SUBSCRIBED') setSyncStatus('live'); });
+    .on('postgres_changes',{event:'*',schema:'public',table:'list_items'},()=>syncFromSupabase())
+    .subscribe(s=>{if(s==='SUBSCRIBED')setSyncStatus('live');});
 }
-
 function refreshActiveSection() {
-  const active = document.querySelector('.section.active');
-  if (!active) return;
-  const id = active.id.replace('section-', '');
-  if (['health','fun','home','work'].includes(id)) renderLists(id);
+  const active=document.querySelector('.section.active'); if(!active) return;
+  const id=active.id.replace('section-','');
+  if(['health','fun','home','work'].includes(id)) renderLists(id);
 }
-
-async function startSync() {
-  setSyncStatus('syncing');
-  await pushUnsynced();
-  await syncFromSupabase();
-  subscribeRealtime();
-}
+async function startSync() { setSyncStatus('syncing'); await pushUnsynced(); await syncFromSupabase(); subscribeRealtime(); }
 
 // ─── GROWTH ────────────────────────────────────────────────────────────────
-const growthOptions = [
-  { icon: '🧘', label: 'Meditation', sub: '10–20 min' },
-  { icon: '🤸', label: 'Stretching',  sub: '15 min' },
-  { icon: '🚶', label: 'Walk',        sub: 'Fresh air' },
-  { icon: '🧘‍♀️', label: 'Yoga',     sub: '20–30 min' },
-  { icon: '📓', label: 'Journaling',  sub: 'Write it out' },
-  { icon: '📖', label: 'Read',        sub: 'From your list', link: 'fun' },
+const growthOptions=[
+  {icon:'🧘',label:'Meditation',sub:'10–20 min'},
+  {icon:'🤸',label:'Stretching',sub:'15 min'},
+  {icon:'🚶',label:'Walk',sub:'Fresh air'},
+  {icon:'🧘‍♀️',label:'Yoga',sub:'20–30 min'},
+  {icon:'📓',label:'Journaling',sub:'Write it out'},
+  {icon:'📖',label:'Read',sub:'From your list',link:'fun'},
 ];
-
 function renderGrowth() {
-  const grid = document.getElementById('growth-grid');
-  grid.innerHTML = '';
-  growthOptions.forEach(opt => {
-    const card = document.createElement('div'); card.className = 'growth-card';
-    card.innerHTML = `<div class="growth-icon">${opt.icon}</div><div class="growth-label">${opt.label}</div><div class="growth-sub">${opt.sub}</div>`;
-    card.onclick = () => {
-      document.querySelectorAll('.growth-card').forEach(c => c.classList.remove('growth-selected'));
+  const grid=document.getElementById('growth-grid'); grid.innerHTML='';
+  growthOptions.forEach(opt=>{
+    const card=document.createElement('div'); card.className='growth-card';
+    card.innerHTML=`<div class="growth-icon">${opt.icon}</div><div class="growth-label">${opt.label}</div><div class="growth-sub">${opt.sub}</div>`;
+    card.onclick=()=>{
+      document.querySelectorAll('.growth-card').forEach(c=>c.classList.remove('growth-selected'));
       card.classList.add('growth-selected');
-      if (opt.link) setTimeout(() => showSection(opt.link), 300);
+      if(opt.link) setTimeout(()=>showSection(opt.link),300);
       else showToast(opt.label+' — enjoy');
     };
     grid.appendChild(card);
@@ -814,28 +627,27 @@ function renderGrowth() {
 }
 
 // ─── NAV ───────────────────────────────────────────────────────────────────
-const navMap = { schedule:0, health:1, fun:2, home:3, work:4, growth:5 };
-
+const navMap={today:0,health:1,fun:2,home:3,work:4,growth:5};
 function showSection(id) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('section-'+id)?.classList.add('active');
-  const btns = document.querySelectorAll('.nav-btn');
-  if (navMap[id] !== undefined) btns[navMap[id]]?.classList.add('active');
-  if (['health','fun','home','work'].includes(id)) renderLists(id);
+  const btns=document.querySelectorAll('.nav-btn');
+  if(navMap[id]!==undefined) btns[navMap[id]]?.classList.add('active');
+  if(['health','fun','home','work'].includes(id)) renderLists(id);
 }
 
 // ─── TOAST ─────────────────────────────────────────────────────────────────
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 1800);
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
 }
 
 // ─── INIT ──────────────────────────────────────────────────────────────────
 function initApp() {
-  appData = loadData();
-  renderSchedule();
+  appData=loadData();
+  renderDateHeader();
   renderGrowth();
   renderLists('health');
   renderLists('fun');
@@ -845,9 +657,7 @@ function initApp() {
   loadCalendarEvents();
 }
 
-if (checkPinSession()) {
-  initApp();
-}
+if(checkPinSession()) { initApp(); }
 </script>
 </body>
 </html>
